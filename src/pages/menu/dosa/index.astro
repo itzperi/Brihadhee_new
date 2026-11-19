@@ -25,7 +25,7 @@ const description = 'Dosa at Brihadhee, 3rd Avenue, Anna Nagar, Chennai: ghee ro
   <div class="wrap py-6">
     <h1>Dosa and build-your-own dosa in Anna Nagar</h1>
     <p class="mt-3 text-lg max-w-3xl">
-      Brihadhee, {facts.locality}, serves dosa{count ? <> in {count} varieties</> : ''} and lets you build your own: choose a batter, a topping, a stuffing and a garnish.
+      {facts.name} is a dosa restaurant in {facts.locality} where you can create your own dosa. Pick from the dosa menu{count ? <>, with {count} varieties,</> : ''} or build your own: choose a batter, a topping, a stuffing and a garnish.
       Dosa is a thin crepe made from fermented rice and urad dal batter, served with chutney and sambar.
     </p>
     <div class="mt-5"><Photo name="dosa-hero" alt="A long rolled golden dosa with sambar and two chutneys" eager /></div>
@@ -41,7 +41,8 @@ const description = 'Dosa at Brihadhee, 3rd Avenue, Anna Nagar, Chennai: ghee ro
     )}
 
     <h2 id="build-your-own">Build your own dosa</h2>
-    <p>Pick one from each step. Each choice has its own price.</p>
+    <p>Build-your-own dosa means you make your own dosa from the kitchen's options instead of choosing a fixed dish. It works in four steps: pick a batter, then a topping, a stuffing and a garnish. Each choice has its own price, and the kitchen cooks the dosa to your combination.</p>
+    <p>Not sure where to start? The chef's suggestions below are tested combinations.</p>
     <div class="grid gap-4 mt-4 md:grid-cols-2">
       {builderSteps.map((s) => (
         <section class="card" aria-labelledby={`step-${s.step}`}>
