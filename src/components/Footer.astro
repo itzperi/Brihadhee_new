@@ -1,6 +1,8 @@
 ---
 import { facts } from '../data/brand-facts';
 import { ok, fullAddress, hoursText, telHref } from '../lib/facts';
+import { cateringReady } from '../lib/catering';
+const showCatering = cateringReady.hub(); // link appears once the catering hub is indexable
 const year = new Date().getFullYear();
 const alsoSearched = facts.alternateNames.filter((n) => !/restaurant|anna nagar/i.test(n));
 const hrs = hoursText();
@@ -19,6 +21,7 @@ const tel = telHref();
         <li><a style="color:#fff" href="/menu/">Menu</a></li>
         <li><a style="color:#fff" href="/order/">Order</a></li>
         <li><a style="color:#fff" href="/book-a-table/">Book a table</a></li>
+        {showCatering && <li><a style="color:#fff" href="/catering/">Catering</a></li>}
         <li><a style="color:#fff" href="/location/anna-nagar/">Location</a></li>
         <li><a style="color:#fff" href="/gallery/">Gallery</a></li>
         <li><a style="color:#fff" href="/reviews/">Reviews</a></li>

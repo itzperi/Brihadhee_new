@@ -48,6 +48,35 @@ export interface Facts {
   signature: string[]; // owner-stated positioning only
   serviceAreas: string[]; // only areas genuinely served; each needs unique written content
   dietaryOptions: { jain: boolean | null; vegan: boolean | null; glutenFree: boolean | null };
+  /**
+   * Catering facts (Phase 1). Each null / empty / false value is an open owner question
+   * (numbers refer to PHASE-0-FACT-AUDIT.md). Pages leave out any sentence whose fact is missing,
+   * and stay noindex until their required answers exist (see src/lib/catering.ts).
+   * "Sentence" fields hold the owner's answer written as one plain sentence.
+   */
+  catering: {
+    offered: boolean; // corporate + event catering (client, W13)
+    minimumGuests: number | null; // Wf call
+    deliveryOnlyMinimumSentence: Text; // Q5, only if delivery-only orders differ
+    serviceStaffOptional: boolean; // Wf call: quote form asks "service or not"
+    whatsapp: Text; // Q4, catering number (falls back to facts.whatsapp)
+    replyTime: Text; // Q4, e.g. "within 30 minutes during working hours"
+    areasServed: string[]; // Q5
+    leadTimeSentence: Text; // Q5
+    maxGuestsPerDay: Text; // Q5, e.g. "1,500"
+    setupSentence: Text; // Q5, what end-to-end service includes beyond cooking, delivery and serving
+    extraCorporateCapacitySentence: Text; // Q5
+    dailyConfirmSentence: Text; // Q5, how daily corporate numbers are confirmed
+    corporateExtras: string[]; // Q5, e.g. "Dinner for evening shifts"
+    proofAnswered: boolean; // Q6 answered (yes or no)
+    dailyMeals: Text; // Q6, publishable figure, e.g. "more than 1,000"
+    clients: string[]; // Q6, only with each client's written permission
+    eventTypesAnswered: boolean; // Q11 answered
+    extraEventTypes: string[]; // Q11, e.g. "Housewarmings (griha pravesam)"
+    weddingFunctions: string[]; // Q11
+    liveDosaCounter: boolean | null; // Q11
+    dishes: string[]; // Q15, dishes offered for catering
+  };
 }
 
 const real: Facts = {
@@ -104,6 +133,31 @@ const real: Facts = {
   ],
   serviceAreas: [],
   dietaryOptions: { jain: null, vegan: null, glutenFree: null },
+  // Catering: client confirmed (W13, Wf call) corporate + event catering, minimum 50 guests, vegetarian only,
+  // service staff optional. Everything else waits for owner answers (PHASE-0-FACT-AUDIT.md Q4, Q5, Q6, Q11, Q15).
+  catering: {
+    offered: true,
+    minimumGuests: 50,
+    deliveryOnlyMinimumSentence: null,
+    serviceStaffOptional: true,
+    whatsapp: null,
+    replyTime: null,
+    areasServed: [],
+    leadTimeSentence: null,
+    maxGuestsPerDay: null,
+    setupSentence: null,
+    extraCorporateCapacitySentence: null,
+    dailyConfirmSentence: null,
+    corporateExtras: [],
+    proofAnswered: false,
+    dailyMeals: null,
+    clients: [],
+    eventTypesAnswered: false,
+    extraEventTypes: [],
+    weddingFunctions: [],
+    liveDosaCounter: null,
+    dishes: [],
+  },
 };
 
 export const facts: Facts = process.env.FACTS_FIXTURE === '1' ? sample : real;
