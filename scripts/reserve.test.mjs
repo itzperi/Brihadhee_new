@@ -1,13 +1,13 @@
 // node --test scripts/reserve.test.mjs — /reserve-table/ rules and /api/book-table.
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { SLOTS, SLOT_GROUPS, openSlots, firstOpenDate, validateBooking, normalisePhone, slotLabel, bookingId, sheetPayload } from "../src/lib/reserve.js";
+import { SLOTS, SLOT_GROUPS, TABLES, SEATS, SEAT_COUNT, openSlots, firstOpenDate, validateBooking, normalisePhone, slotLabel, bookingId, sheetPayload, seatSummary, sortSeats } from "../src/lib/reserve.js";
 import { handleBooking, handleAvailability } from "../api/book-table.js";
 
 // 2026-11-20 12:40 IST
 const NOW = Date.parse("2026-11-20T07:10:00Z");
 const ENV = { BOOKING_SHEET_WEBHOOK_URL: "https://script.google.com/macros/s/AKfyTEST_123/exec", BOOKING_SHEET_SECRET: "s3cret" };
-const good = { date: "2026-11-20", slots: ["13:00", "13:30"], tables: [2, 5], name: "Test Guest", phone: "9876543210", source: "instagram / paid_social" };
+const good = { date: "2026-11-20", slots: ["13:00", "13:30"], seats: ["D4-3", "D1-2", "D1-1"], name: "Test Guest", phone: "9876543210", source: "instagram / paid_social" };
 const post = (body) => new Request("https://www.brihadhee.com/api/book-table", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(body) });
 
 test("24 half-hour slots from 11:00 AM to 10:30 PM in three groups", () => {
@@ -17,6 +17,15 @@ test("24 half-hour slots from 11:00 AM to 10:30 PM in three groups", () => {
   assert.equal(slotLabel(SLOTS.at(-1)), "10:30 PM");
   assert.deepEqual(SLOT_GROUPS.map((g) => g.slots.length), [10, 6, 8]);
   assert.deepEqual(SLOT_GROUPS.flatMap((g) => g.slots), SLOTS);
+});
+
+test("floor plan: 6 tables of 4+2 and 2 tables of 4, 44 seats", () => {
+  assert.deepEqual(TABLES.map((t) => t.id).sort(), ["D1", "D2", "D3", "D4", "D5", "D6", "D7", "D8"]);
+  assert.deepEqual(TABLES.filter((t) => t.seats === 4).map((t) => t.id).sort(), ["D4", "D5"]);
+  assert.equal(SEAT_COUNT, 44);
+  assert.equal(SEATS.length, new Set(SEATS).size);
+  assert.deepEqual(sortSeats(["D4-3", "D1-2", "D10-1", "D1-1"]), ["D1-1", "D1-2", "D4-3", "D10-1"]);
+  assert.equal(seatSummary(["D4-3", "D1-2", "D1-1"]), "D1 (seats 1, 2), D4 (seat 3)");
 });
 
 test("today only offers slots that have not started (IST)", () => {
@@ -34,8 +43,10 @@ test("phone normalisation", () => {
 
 test("validateBooking accepts a good booking and rejects bad input", () => {
   assert.equal(validateBooking(good, { now: NOW }).ok, true);
-  const bad = validateBooking({ ...good, slots: ["12:00"], tables: [9], name: "x", phone: "123" }, { now: NOW });
-  assert.deepEqual(Object.keys(bad.errors).sort(), ["name", "phone", "slots", "tables"]);
+  const bad = validateBooking({ ...good, slots: ["12:00"], seats: ["D4-5"], name: "x", phone: "123" }, { now: NOW });
+  assert.deepEqual(Object.keys(bad.errors).sort(), ["name", "phone", "seats", "slots"]);
+  assert.equal(validateBooking({ ...good, seats: [] }, { now: NOW }).errors.seats, "Choose at least one seat.");
+  assert.deepEqual(validateBooking({ ...good, seats: "d1-1, D1-1" }, { now: NOW }).booking.seats, ["D1-1"]);
   assert.equal(validateBooking({ ...good, date: "2026-02-30" }, { now: NOW }).ok, false);
   assert.equal(validateBooking({ ...good, company: "bot" }, { now: NOW }).spam, true);
 });
@@ -47,7 +58,9 @@ test("sheet row matches the sheet's columns", () => {
   assert.equal(row.timestamp, "20/11/2026, 12:40:00");
   assert.equal(row.timings, "1:00 PM, 1:30 PM");
   assert.equal(row.tableCount, 2);
-  assert.equal(row.tableNumbers, "Table 2, Table 5");
+  assert.equal(row.tableNumbers, "D1 (seats 1, 2), D4 (seat 3)");
+  assert.equal(row.seatCount, 3);
+  assert.deepEqual(row.seatIds, ["D1-1", "D1-2", "D4-3"]);
   assert.equal(row.phone, "+91 98765 43210");
 });
 
@@ -65,14 +78,15 @@ test("POST books through the sheet and never exposes the secret to the browser",
   assert.equal(sent.body.action, "book");
   assert.equal(data.booking.bookingId, "BRH-1120-2222");
   assert.equal(JSON.stringify(data).includes("s3cret"), false);
-  assert.equal("tableIds" in data.booking, false);
+  assert.equal("slotIds" in data.booking, false);
+  assert.deepEqual(sent.body.row.seatIds, ["D1-1", "D1-2", "D4-3"]);
 });
 
 test("POST maps a clash to 409, sheet failure to 502, missing config to 503, bad input to 422", async () => {
-  const clash = async () => new Response(JSON.stringify({ ok: false, error: "taken", taken: [{ slot: "1:30 PM", table: 5 }] }));
+  const clash = async () => new Response(JSON.stringify({ ok: false, error: "taken", taken: [{ slot: "1:30 PM", seat: "D4-3", table: 4 }] }));
   const r1 = await handleBooking(post(good), { env: ENV, now: NOW, fetchImpl: clash });
   assert.equal(r1.status, 409);
-  assert.deepEqual((await r1.json()).taken, [{ slot: "13:30", table: 5 }]);
+  assert.deepEqual((await r1.json()).taken, [{ slot: "13:30", seat: "D4-3" }]);
 
   const down = async () => new Response("<html>", { status: 500 });
   assert.equal((await handleBooking(post(good), { env: ENV, now: NOW, fetchImpl: down })).status, 502);
@@ -81,8 +95,8 @@ test("POST maps a clash to 409, sheet failure to 502, missing config to 503, bad
   assert.equal((await handleBooking(new Request("https://x/api/book-table", { method: "POST", body: "nope" }), { env: ENV, now: NOW })).status, 400);
 });
 
-test("GET returns taken tables per slot id, with no personal data", async () => {
-  const fetchImpl = async () => new Response(JSON.stringify({ ok: true, taken: { "1:00 PM": [5, 2], "9:99 PM": [1] } }));
+test("GET returns taken seats per slot id, with no personal data", async () => {
+  const fetchImpl = async () => new Response(JSON.stringify({ ok: true, taken: { "1:00 PM": ["D4-3", "D1-1", "bogus"], "9:99 PM": ["D1-2"] } }));
   const res = await handleAvailability(new Request("https://x/api/book-table?date=2026-11-20"), { env: ENV, fetchImpl });
-  assert.deepEqual(await res.json(), { ok: true, date: "2026-11-20", taken: { "13:00": [2, 5] } });
+  assert.deepEqual(await res.json(), { ok: true, date: "2026-11-20", taken: { "13:00": ["D1-1", "D4-3"] } });
 });
