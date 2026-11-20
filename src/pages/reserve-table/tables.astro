@@ -1,0 +1,295 @@
+---
+/**
+ * /reserve-table/tables/: step 2 of the Instagram ad booking funnel. Reads
+ * ?date=…&slots=… from step 1, shows the 8 tables (tables already booked for an
+ * overlapping slot are disabled, from GET /api/book-table), takes name and
+ * phone in a dialog and posts to /api/book-table, which writes the Google
+ * Sheet. The confirmation shows only after the sheet accepted the row.
+ */
+import ReserveFrame from "../../components/ReserveFrame.astro";
+import Icon from "../../components/Icon.astro";
+import { TABLES } from "../../lib/reserve.js";
+import { site, telHref } from "../../data/site.js";
+import { getFact } from "../../data/entity-truth.ts";
+
+const path = "/reserve-table/tables/";
+const title = `Choose Your Table | ${site.name}, Anna Nagar East`;
+const description = `Choose your table and confirm your booking at ${site.name}, Anna Nagar East, Chennai.`;
+const phone = getFact("phone");
+---
+
+<ReserveFrame title={title} description={description} path={path} step={2}>
+  <div class="rv-wrap" data-reserve-tables data-directions={site.maps.directions}>
+    <div data-pick>
+      <h1 class="rv-title">Choose your tables</h1>
+      <div class="rv-summary">
+        <dl>
+          <dt>Date</dt><dd data-sum-date>…</dd>
+          <dt>Time</dt><dd data-sum-time>…</dd>
+        </dl>
+        <a href="/reserve-table/" data-back>Change</a>
+      </div>
+      <p class="rv-alert" data-invalid hidden>
+        That date or time is no longer available. <a href="/reserve-table/">Choose a time again</a>.
+      </p>
+
+      <span class="rv-label" id="floor-label">Tap one or more tables</span>
+      <div class="rv-floor" role="group" aria-labelledby="floor-label">
+        {TABLES.map((t) => (
+          <button type="button" class="rv-table" data-table={t.id} aria-pressed="false">
+            <span class="rv-table__top" aria-hidden="true"></span>
+            <span class="rv-table__name">{t.label}</span>
+            <span class="rv-table__tag" data-tag>Available</span>
+          </button>
+        ))}
+      </div>
+      <p class="rv-note" data-avail-note aria-live="polite"></p>
+      <p class="rv-alert" data-page-error role="alert" hidden></p>
+    </div>
+
+    <section class="rv-confirm" data-done hidden tabindex="-1" aria-labelledby="done-title">
+      <span class="rv-confirm__badge"><Icon name="check" size={18} /> Booking received</span>
+      <h2 id="done-title">Your table is booked</h2>
+      <dl>
+        <dt>Booking ID</dt><dd class="rv-confirm__id" data-c="bookingId"></dd>
+        <dt>Date</dt><dd data-c="date"></dd>
+        <dt>Time</dt><dd data-c="timings"></dd>
+        <dt>Tables</dt><dd data-c="tables"></dd>
+        <dt>Name</dt><dd data-c="name"></dd>
+        <dt>Phone</dt><dd data-c="phone"></dd>
+      </dl>
+      <p class="rv-note">Show this Booking ID at the counter. The reception team may call you on this number before your visit.</p>
+      <div class="rv-confirm__actions">
+        <a class="btn btn--primary" href={telHref}><Icon name="phone" size={17} /> Call Reception ({phone})</a>
+        <a class="btn btn--ghost" href={site.maps.directions} target="_blank" rel="noopener"><Icon name="navigation" size={17} /> Directions to {site.name}, Anna Nagar East</a>
+      </div>
+    </section>
+  </div>
+
+  <div class="rv-bar" data-bar>
+    <div class="rv-wrap rv-bar__row">
+      <p class="rv-bar__text" data-bar-text aria-live="polite">Choose at least one table.</p>
+      <button type="button" class="btn btn--primary rv-cta" data-book disabled>Book Table</button>
+    </div>
+  </div>
+
+  <dialog class="rv-dialog" data-dialog aria-labelledby="dlg-title">
+    <form data-form novalidate>
+      <h2 id="dlg-title">Your details</h2>
+      <p class="rv-note" data-dlg-sum></p>
+      <div class="rv-field">
+        <label for="rv-name">Full name</label>
+        <input id="rv-name" name="name" autocomplete="name" required maxlength="80" aria-describedby="err-name" />
+        <p class="rv-err" id="err-name" data-err="name"></p>
+      </div>
+      <div class="rv-field">
+        <label for="rv-phone">Mobile number</label>
+        <div class="rv-phone">
+          <span aria-hidden="true">+91</span>
+          <input id="rv-phone" name="phone" type="tel" inputmode="numeric" autocomplete="tel-national" required maxlength="14" placeholder="98765 43210" aria-describedby="err-phone" />
+        </div>
+        <p class="rv-err" id="err-phone" data-err="phone"></p>
+      </div>
+      <div class="rv-hp" aria-hidden="true">
+        <label for="rv-company">Company</label>
+        <input id="rv-company" name="company" tabindex="-1" autocomplete="off" />
+      </div>
+      <p class="rv-alert" data-form-error role="alert" hidden></p>
+      <div class="rv-dialog__actions">
+        <button type="submit" class="btn btn--primary rv-cta" data-submit>
+          <span class="rv-spin" aria-hidden="true"></span><span data-submit-label>Confirm Reservation</span>
+        </button>
+        <button type="button" class="btn btn--ghost" data-cancel>Back</button>
+      </div>
+    </form>
+  </dialog>
+</ReserveFrame>
+
+<script>
+  import { openSlots, parseSlots, dateLabel, slotLabel, normalisePhone, TABLE_COUNT } from "../../lib/reserve.js";
+
+  const root = document.querySelector("[data-reserve-tables]");
+  const $ = (s, el = document) => el.querySelector(s);
+  const tableBtns = [...root.querySelectorAll("[data-table]")];
+  const bar = $("[data-bar]");
+  const barText = $("[data-bar-text]");
+  const book = $("[data-book]");
+  const dialog = $("[data-dialog]");
+  const form = $("[data-form]");
+  const submit = $("[data-submit]");
+  const formError = $("[data-form-error]");
+  const pageError = $("[data-page-error]");
+  const availNote = $("[data-avail-note]");
+
+  const params = new URLSearchParams(location.search);
+  const date = params.get("date") || "";
+  const slots = parseSlots(params.get("slots"));
+  const back = new URLSearchParams(location.search);
+  $("[data-back]").href = `/reserve-table/?${back}`;
+  $("[data-invalid] a").href = `/reserve-table/?${back}`;
+
+  const source = (() => {
+    const s = params.get("utm_source"), m = params.get("utm_medium"), c = params.get("utm_campaign");
+    if (s) return [s, m, c].filter(Boolean).join(" / ");
+    if (params.get("fbclid")) return "facebook/instagram (fbclid)";
+    try {
+      const ref = document.referrer && new URL(document.referrer).hostname;
+      if (ref && ref !== location.hostname) return `referral: ${ref}`;
+    } catch {}
+    return "direct";
+  })().slice(0, 120);
+
+  const open = new Set(openSlots(date));
+  const valid = slots.length > 0 && slots.every((s) => open.has(s));
+  const timeText = slots.map(slotLabel).join(", ");
+  $("[data-sum-date]").textContent = valid ? dateLabel(date) : "—";
+  $("[data-sum-time]").textContent = valid ? timeText : "—";
+  if (!valid) {
+    $("[data-invalid]").hidden = false;
+    tableBtns.forEach((b) => (b.disabled = true));
+  }
+
+  const selected = new Set();
+  let taken = new Set();
+  let sending = false;
+
+  function render() {
+    for (const b of tableBtns) {
+      const id = Number(b.dataset.table);
+      const isTaken = taken.has(id);
+      if (isTaken) selected.delete(id);
+      b.disabled = !valid || isTaken;
+      b.setAttribute("aria-pressed", String(selected.has(id)));
+      $("[data-tag]", b).textContent = isTaken ? "Booked" : selected.has(id) ? "Selected" : "Available";
+    }
+    const list = [...selected].sort((a, b) => a - b);
+    book.disabled = !valid || !list.length;
+    barText.textContent = list.length
+      ? `${list.length} ${list.length === 1 ? "Table" : "Tables"} Selected: ${list.map((t) => `Table ${t}`).join(", ")}`
+      : "Choose at least one table.";
+  }
+
+  tableBtns.forEach((b) => b.addEventListener("click", () => {
+    const id = Number(b.dataset.table);
+    selected.has(id) ? selected.delete(id) : selected.add(id);
+    pageError.hidden = true;
+    render();
+  }));
+
+  async function loadAvailability() {
+    if (!valid) return;
+    availNote.textContent = "Checking which tables are free…";
+    try {
+      const res = await fetch(`/api/book-table?date=${encodeURIComponent(date)}`, { headers: { Accept: "application/json" } });
+      const data = await res.json();
+      if (!data.ok) throw new Error();
+      taken = new Set(slots.flatMap((s) => data.taken[s] || []));
+      availNote.textContent = taken.size === TABLE_COUNT
+        ? "All tables are booked for this time. Choose another time or call reception."
+        : taken.size ? "Tables marked Booked are taken for your time." : "";
+    } catch {
+      availNote.textContent = "";
+    }
+    render();
+  }
+
+  book.addEventListener("click", () => {
+    if (book.disabled) return;
+    const list = [...selected].sort((a, b) => a - b);
+    $("[data-dlg-sum]").textContent = `${dateLabel(date)} · ${timeText} · ${list.map((t) => `Table ${t}`).join(", ")}`;
+    formError.hidden = true;
+    dialog.showModal();
+    $("#rv-name").focus();
+  });
+  $("[data-cancel]").addEventListener("click", () => dialog.close());
+
+  function fieldError(name, msg) {
+    const input = form.elements[name];
+    $(`[data-err="${name}"]`).textContent = msg || "";
+    input.setAttribute("aria-invalid", msg ? "true" : "false");
+    return !msg;
+  }
+
+  function setLoading(on) {
+    sending = on;
+    submit.disabled = on;
+    submit.classList.toggle("is-loading", on);
+    $("[data-submit-label]").textContent = on ? "Confirming…" : "Confirm Reservation";
+  }
+
+  function showDone(b) {
+    const list = [...selected].sort((a, b) => a - b);
+    const set = (k, v) => ($(`[data-c="${k}"]`).textContent = v);
+    set("bookingId", b.bookingId);
+    set("date", dateLabel(b.date));
+    set("timings", b.timings);
+    set("tables", `${b.tableCount} (${b.tableNumbers || list.map((t) => `Table ${t}`).join(", ")})`);
+    set("name", b.name);
+    set("phone", b.phone);
+    dialog.close();
+    $("[data-pick]").hidden = true;
+    bar.hidden = true;
+    document.querySelector(".rv-steps")?.setAttribute("hidden", "");
+    const done = $("[data-done]");
+    done.hidden = false;
+    done.focus();
+    window.scrollTo(0, 0);
+    try { sessionStorage.setItem("brihadhee:lastBooking", JSON.stringify(b)); } catch {}
+    if (typeof window.gtag === "function") window.gtag("event", "reserve_table_submit", { tables: b.tableCount, page_path: location.pathname });
+    if (typeof window.fbq === "function") window.fbq("track", "Schedule", { content_name: "reserve-table" });
+  }
+
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    if (sending) return;
+    formError.hidden = true;
+    const name = form.elements.name.value.trim();
+    const phone = normalisePhone(form.elements.phone.value);
+    const ok = [
+      fieldError("name", name.length < 2 ? "Enter your full name." : ""),
+      fieldError("phone", phone ? "" : "Enter a 10-digit mobile number, e.g. 98765 43210."),
+    ].every(Boolean);
+    if (!ok) {
+      form.querySelector('[aria-invalid="true"]')?.focus();
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const res = await fetch("/api/book-table", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Accept: "application/json" },
+        body: JSON.stringify({ date, slots, tables: [...selected], name, phone, source, company: form.elements.company.value }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (res.ok && data.ok && data.booking) return showDone(data.booking);
+      if (res.status === 409 && data.error === "taken") {
+        data.taken.forEach((t) => taken.add(t.table));
+        render();
+        dialog.close();
+        pageError.textContent = `Sorry, ${[...new Set(data.taken.map((t) => `Table ${t.table}`))].join(", ")} was just booked by someone else. Choose another table.`;
+        pageError.hidden = false;
+        return;
+      }
+      if (res.status === 422 && data.errors) {
+        if (data.errors.name) fieldError("name", data.errors.name);
+        if (data.errors.phone) fieldError("phone", data.errors.phone);
+        const other = Object.entries(data.errors).filter(([k]) => k !== "name" && k !== "phone").map(([, v]) => v);
+        if (other.length) {
+          formError.textContent = other.join(" ");
+          formError.hidden = false;
+        }
+        return;
+      }
+      throw new Error(String(res.status));
+    } catch {
+      formError.textContent = "We could not save your booking. Please try again, or call reception on the number at the top of the page.";
+      formError.hidden = false;
+    } finally {
+      setLoading(false);
+    }
+  });
+
+  render();
+  loadAvailability();
+</script>

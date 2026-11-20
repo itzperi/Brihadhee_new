@@ -117,3 +117,13 @@ Evidence is in [`11-gsc-baseline.md`](11-gsc-baseline.md). Every step below need
 | E2 | With D4 | Fill `13-url-inspection-checklist.md`. Request indexing for the ten rows marked R first, and attach a screenshot to every row. | Owner + developer | Open |
 | E3 | Before day 0 + 30 | Run the 12-prompt answer-engine set in `16-geo-pitch-pack.md` §A, 3 runs per engine, and log the results with evidence. | Owner or developer | Open |
 | E4 | Optional | Send pitches 1–3 in `16-geo-pitch-pack.md` §B to named writers, one at a time. Check the judgement line in pitch 2 before sending. | Owner | Open |
+
+## F. Instagram ad booking funnel (`17-reserve-table.md`, 20 Nov 2026)
+
+| ID | Priority | Action | Who | Status |
+|---|---|---|---|---|
+| F1 | Before ads run | **Tables.** The page offers Table 1 to Table 8 with no seat count. Does the dining room have exactly 8 bookable tables? How many seats does each have, and may we show "4-seater" or "Family table"? Should some tables be held back for walk-ins? | Owner | Open |
+| F2 | Before ads run | **Instant booking.** The page says "Your table is booked" as soon as the row is saved. Will reception honour these bookings without calling first? Who checks the sheet, and how often? If not, the wording changes to "Booking request received, we'll call to confirm". | Owner | Open |
+| F3 | Before ads run | **Rules.** Bookings open up to 30 days ahead, and any number of 30-minute slots and tables can be chosen. Should there be a maximum (for example 2 hours or 4 tables), a cut-off before the slot (for example 30 minutes), or a pre-booking discount (the partner offer applies only on partner apps)? | Owner | Open |
+| F4 | Now | **Sheet access.** The sheet is owned by brihadheemeta@gmail.com and is Restricted. Share it by email with the people who need it (Editor for reception, to delete a cancelled booking). It holds customer phone numbers, so don't use "Anyone with the link". | Owner | Open |
+| F5 | To go live | Add `BOOKING_SHEET_WEBHOOK_URL` and `BOOKING_SHEET_SECRET` in Vercel (values in `.env.local` on the dev machine), push `feat/reserve-table`, merge, deploy, then check `/reserve-table` returns 200. | Developer | Open |
