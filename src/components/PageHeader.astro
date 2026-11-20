@@ -23,7 +23,7 @@ const { phone, telHref, hasPhone } = pageContact(Astro);
           <Icon name="phone" size={17} /> Call {phone}
         </a>
       )}
-      {showReserve && (
+      {showReserve && primaryAction?.href !== href(ROUTES.reserve) && (
         <a class="btn btn--ghost" href={href(ROUTES.reserve)} data-event="reserve_table_view_click">
           <Icon name="clock" size={17} /> Reserve a table
         </a>
