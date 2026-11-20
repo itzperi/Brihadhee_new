@@ -2,7 +2,8 @@
 /**
  * Sticky mobile CTA bar (hidden from 900px up): Call | WhatsApp | Book / Quote.
  * Rendered by Base.astro on every page. Catering pages pass mode="quote", which
- * turns the third button into "Get a quote" (jumps to the page's #enquiry form).
+ * turns the third button into "Get a quote" (jumps to the page's #enquiry form);
+ * otherwise it is "Reserve table" (online booking at /reserve-table/).
  * Taps fire the GA4 events click_call, click_whatsapp, book_table_view_click and
  * quote_cta_click (src/scripts/main.js).
  */
@@ -33,9 +34,9 @@ const { hasPhone, hasWhatsApp, telHref, whatsappHref } = pageContact(Astro);
       {quoteAction?.shortLabel ?? quoteAction?.label ?? "Get a quote"}
     </a>
   ) : (
-    <a href={href(ROUTES.book)} data-event="book_table_view_click" data-primary>
-      <Icon name="utensils" size={19} />
-      Book a table
+    <a href={href(ROUTES.reserve)} data-event="reserve_table_view_click" data-primary>
+      <Icon name="clock" size={19} />
+      Reserve table
     </a>
   )}
 </nav>

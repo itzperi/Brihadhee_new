@@ -43,16 +43,24 @@ function cellDate(v) {
   return v instanceof Date ? Utilities.formatDate(v, TZ, "yyyy-MM-dd") : String(v).trim();
 }
 
+/** "1:00 PM, 1:30 PM" → ["1:00 PM", "1:30 PM"]. A single time Sheets turned into a
+ *  time value comes back as a Date, so format it in the sheet's own time zone. */
+function cellSlots(v, tz) {
+  if (v instanceof Date) return [Utilities.formatDate(v, tz, "h:mm a")];
+  return String(v).split(",").map(function (s) { return s.trim(); }).filter(String);
+}
+
 /** { "1:00 PM": Set([2, 5]) } for every booking row on `date`. */
 function takenOn(sheet, date) {
   const taken = {};
   const last = sheet.getLastRow();
   if (last < 2) return taken;
+  const tz = sheet.getParent().getSpreadsheetTimeZone();
   const rows = sheet.getRange(2, 1, last - 1, HEADERS.length).getValues();
   rows.forEach(function (r) {
     if (cellDate(r[COL.date]) !== date) return;
     const tables = String(r[COL.tables]).match(/\d+/g) || [];
-    String(r[COL.timings]).split(",").map(function (s) { return s.trim(); }).filter(String).forEach(function (slot) {
+    cellSlots(r[COL.timings], tz).forEach(function (slot) {
       taken[slot] = taken[slot] || {};
       tables.forEach(function (t) { taken[slot][Number(t)] = true; });
     });
@@ -97,9 +105,9 @@ function doPost(e) {
       row.timestamp, row.bookingId, row.date, row.timings, row.tableCount,
       row.tableNumbers, row.name, row.phone, row.source,
     ].map(function (v) {
-      // A leading = + - @ would be read as a formula; the apostrophe keeps it text.
-      const s = String(v);
-      return /^[=+\-@]/.test(s) ? "'" + s : s;
+      // The leading apostrophe stores every value as typed: no formulas, and no
+      // "10:30 PM" or "2026-11-21" turned into time or date values. It isn't shown.
+      return "'" + String(v);
     }));
     SpreadsheetApp.flush();
     return reply({ ok: true, bookingId: row.bookingId });

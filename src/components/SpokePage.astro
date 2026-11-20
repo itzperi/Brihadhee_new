@@ -35,7 +35,7 @@ const home = href("/");
         <div class="container"><strong>Draft.</strong> {page.draftNote}</div>
       </div>
     )}
-    <PageHeader eyebrow={page.eyebrow} h1={page.h1} intro={page.intro} menuHref={page.menuHref} primaryAction={page.primaryAction} showDirections={page.showDirections} />
+    <PageHeader eyebrow={page.eyebrow} h1={page.h1} intro={page.intro} menuHref={page.menuHref} primaryAction={page.primaryAction} showDirections={page.showDirections} showReserve={(page.cta ?? "book") !== "quote"} />
     {page.tamil && (
       <div class="container">
         <p class="section__lead catering__tamil tamil" lang="ta">{page.tamil}</p>
