@@ -64,3 +64,15 @@ Screenshots: `evidence/reserve-table/3-tables.png` and `evidence/reserve-table/5
 4. Ad URL: `https://www.brihadhee.com/reserve-table/?utm_source=instagram&utm_medium=paid_social` (add `&utm_campaign=<name>` per campaign).
 
 If the Apps Script code changes, use Deploy → Manage deployments → Edit → New version. That keeps the same `/exec` URL.
+
+## Update 2026-11-20: seat booking on the owner's floor plan
+
+Step 2 now shows the dining room from the owner's sketch (`docs/reserve-table/floor-plan.md`): tables D1–D8, 44 seats. Guests tap single seats, or tap a table to take all its free seats.
+
+- Seats already booked for an overlapping slot are greyed out and can't be chosen.
+- The Apps Script refuses a clashing seat under a lock. Its 409 response names the seats that were lost, and the guest's other choices stay selected.
+- The sheet gains column J "Number of Seats". "Table Numbers" reads `D1 (seats 1, 2), D4 (seat 3)`.
+
+Checked with Playwright against the stand-in sheet: guest A booked D1 seats 1–2, and guest B saw both seats greyed and disabled. Seats fit inside the room with no overlaps at 320, 360, 390, 430, 768 and 1366 px widths.
+
+**Order to go live:** publish the new Apps Script version first, then deploy the site. The new script still accepts bookings from the old table page, where a table booking blocks every seat at that table. The new page, however, needs the new script.

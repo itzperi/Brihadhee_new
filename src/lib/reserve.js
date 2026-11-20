@@ -5,14 +5,14 @@
  *
  * Slots are 30 minutes from 11:00 to 22:30 (the last one ends at 23:00), which is
  * the verified dining window in entity-truth.ts (DINING_OPENS / DINING_CLOSES).
- * Table count and labels are not verified facts yet: see owner-questions.md.
+ * Floor plan, table names and seats: the owner's sketch of the dining room
+ * (20 Nov 2026, docs/reserve-table/floor-plan.md). Guests book seats, not tables.
  */
 
 export const TZ = "Asia/Kolkata";
 export const OPEN_MIN = 11 * 60;
 export const CLOSE_MIN = 23 * 60;
 export const SLOT_MIN = 30;
-export const TABLE_COUNT = 8;
 export const BOOK_AHEAD_DAYS = 30;
 
 /** "13:30" for minute 810. */
@@ -33,7 +33,46 @@ export const SLOT_GROUPS = [
   { id: "dinner", label: "Dinner", from: "19:00", to: "22:30" },
 ].map((g) => ({ ...g, slots: SLOTS.filter((s) => s >= g.from && s <= g.to) }));
 
-export const TABLES = Array.from({ length: TABLE_COUNT }, (_, i) => ({ id: i + 1, label: `Table ${i + 1}` }));
+/**
+ * The dining room as sketched by the owner. x is the table's centre and y its top
+ * edge, as % of the room (entrance at the top, kitchen at the bottom right).
+ * "4+2" tables have 2 chairs on each long side and 1 at each end: seats 1–2 top
+ * (left to right), 3–4 bottom, 5 left end, 6 right end. 4-seat tables: seats 1–4.
+ */
+export const TABLES = [
+  { id: "D3", seats: 6, x: 19, y: 7 },
+  { id: "D2", seats: 6, x: 19, y: 35 },
+  { id: "D1", seats: 6, x: 19, y: 61 },
+  { id: "D5", seats: 4, x: 50, y: 29 },
+  { id: "D4", seats: 4, x: 50, y: 54 },
+  { id: "D8", seats: 6, x: 81, y: 15 },
+  { id: "D7", seats: 6, x: 81, y: 40 },
+  { id: "D6", seats: 6, x: 81, y: 66 },
+].map((t) => ({ ...t, label: t.seats === 6 ? "4+2 seats" : "4 seats" }));
+
+/** Every seat id, e.g. "D1-3" (table D1, seat 3). */
+export const SEATS = TABLES.flatMap((t) => Array.from({ length: t.seats }, (_, i) => `${t.id}-${i + 1}`));
+export const SEAT_COUNT = SEATS.length;
+const SEAT_SET = new Set(SEATS);
+
+/** Seat ids sorted by table (D1 … D8) then seat number. */
+export function sortSeats(ids) {
+  const key = (id) => id.split("-").map((p) => Number(p.replace("D", "")));
+  return [...new Set(ids)].sort((a, b) => key(a)[0] - key(b)[0] || key(a)[1] - key(b)[1]);
+}
+
+/** "D1 (seats 1, 2), D4 (seat 3)" for ["D1-1", "D1-2", "D4-3"]. */
+export function seatSummary(ids) {
+  const by = new Map();
+  for (const id of sortSeats(ids)) {
+    const [t, n] = id.split("-");
+    by.set(t, [...(by.get(t) || []), n]);
+  }
+  return [...by].map(([t, ns]) => `${t} (${ns.length === 1 ? "seat" : "seats"} ${ns.join(", ")})`).join(", ");
+}
+
+/** Distinct tables in a seat list, in order. */
+export const tablesOf = (ids) => [...new Set(sortSeats(ids).map((id) => id.split("-")[0]))];
 
 /** IST calendar date ("YYYY-MM-DD") and minute of day for an instant. */
 export function istNow(now = Date.now()) {
@@ -91,10 +130,10 @@ export function parseSlots(v) {
   return [...new Set(list.map((s) => String(s).trim()).filter(Boolean))].sort();
 }
 
-/** Table numbers from "2,5" or [2, 5]. Sorted, unique. */
-export function parseTables(v) {
+/** Seat ids from "D1-1,D1-2" or ["D1-1", "D1-2"]. Upper-cased, unique, unvalidated. */
+export function parseSeats(v) {
   const list = Array.isArray(v) ? v : String(v ?? "").split(",");
-  return [...new Set(list.map((s) => String(s).trim()).filter(Boolean).map(Number))].sort((a, b) => a - b);
+  return [...new Set(list.map((s) => String(s).trim().toUpperCase()).filter(Boolean))];
 }
 
 const clean = (s, max) => String(s ?? "").replace(/[\u0000-\u001f\u007f]/g, " ").replace(/\s+/g, " ").trim().slice(0, max);
@@ -108,7 +147,7 @@ export function validateBooking(input, { now = Date.now() } = {}) {
   const errors = {};
   const date = String(input?.date ?? "");
   const slots = parseSlots(input?.slots);
-  const tables = parseTables(input?.tables);
+  const seats = parseSeats(input?.seats);
   const name = clean(input?.name, 80);
   const phone = normalisePhone(input?.phone);
 
@@ -120,15 +159,15 @@ export function validateBooking(input, { now = Date.now() } = {}) {
     else if (!slots.length) errors.slots = "Choose at least one time slot.";
     else if (slots.some((s) => !open.has(s))) errors.slots = "One of the chosen times is no longer available. Choose again.";
   }
-  if (!tables.length) errors.tables = "Choose at least one table.";
-  else if (tables.some((t) => !Number.isInteger(t) || t < 1 || t > TABLE_COUNT)) errors.tables = "Choose tables from the list.";
+  if (!seats.length) errors.seats = "Choose at least one seat.";
+  else if (seats.some((id) => !SEAT_SET.has(id))) errors.seats = "Choose seats from the floor plan.";
   if (name.length < 2) errors.name = "Enter your full name.";
   if (!phone) errors.phone = "Enter a 10-digit Indian mobile number.";
 
   if (Object.keys(errors).length) return { ok: false, errors };
   return {
     ok: true,
-    booking: { date, slots, tables, name, phone, source: clean(input?.source, 120) || "direct" },
+    booking: { date, slots, seats: sortSeats(seats), name, phone, source: clean(input?.source, 120) || "direct" },
   };
 }
 
@@ -152,9 +191,10 @@ export function sheetPayload(booking, { id, now = Date.now() }) {
     date: booking.date,
     timings: booking.slots.map(slotLabel).join(", "),
     slotIds: booking.slots,
-    tableCount: booking.tables.length,
-    tableNumbers: booking.tables.map((t) => `Table ${t}`).join(", "),
-    tableIds: booking.tables,
+    tableCount: tablesOf(booking.seats).length,
+    tableNumbers: seatSummary(booking.seats),
+    seatCount: booking.seats.length,
+    seatIds: booking.seats,
     name: booking.name,
     phone: formatPhone(booking.phone),
     source: booking.source,
