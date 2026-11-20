@@ -71,7 +71,7 @@ Step 2 now shows the dining room from the owner's sketch (`docs/reserve-table/fl
 
 - Seats already booked for an overlapping slot are greyed out and can't be chosen.
 - The Apps Script refuses a clashing seat under a lock. Its 409 response names the seats that were lost, and the guest's other choices stay selected.
-- The sheet gains column J "Number of Seats". "Table Numbers" reads `D1 (seats 1, 2), D4 (seat 3)`.
+- The sheet gains column J "Number of People" (= seats booked, filled in automatically). "Table Numbers" reads `D1 (seats 1, 2), D4 (seat 3)`.
 
 Checked with Playwright against the stand-in sheet: guest A booked D1 seats 1–2, and guest B saw both seats greyed and disabled. Seats fit inside the room with no overlaps at 320, 360, 390, 430, 768 and 1366 px widths.
 

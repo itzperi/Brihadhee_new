@@ -17,6 +17,6 @@ Source: the owner's hand-drawn sketch "Book your seat", shared 20 Nov 2026 (`flo
 
 **Seat numbers:** 1–2 along the top edge (left to right) and 3–4 along the bottom edge. On 4+2 tables, 5 is the left end and 6 the right end. Seat ids are `<table>-<seat>`, e.g. `D1-5`.
 
-**In the sheet:** "Table Numbers" reads `D1 (seats 1, 2), D4 (seat 3)`, "Number of Tables" counts the tables, and "Number of Seats" (column J) counts the seats. To cancel a booking, delete its row; its seats become free. A row naming a table without seats (`D3`, or `Table 3` from the first version) blocks the whole table.
+**In the sheet:** "Table Numbers" reads `D1 (seats 1, 2), D4 (seat 3)`, "Number of Tables" counts the tables, and "Number of People" (column J) is the number of seats booked, filled in automatically. To cancel a booking, delete its row; its seats become free. A row naming a table without seats (`D3`, or `Table 3` from the first version) blocks the whole table.
 
 **Assumption to confirm with the owner:** "4+2" is drawn as 2 chairs per long side plus 1 at each end. If the 2 extra chairs sit elsewhere, only the drawing changes; the booking rules stay the same.

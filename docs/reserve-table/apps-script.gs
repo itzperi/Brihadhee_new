@@ -9,7 +9,8 @@
  * Only the website's /api/book-table calls this; it sends SECRET with each call.
  *
  * Guests book seats. Seat ids are "<table>-<seat>", e.g. "D1-3". The sheet's
- * "Table Numbers" column reads "D1 (seats 1, 2), D4 (seat 3)".
+ * "Table Numbers" column reads "D1 (seats 1, 2), D4 (seat 3)"; "Number of People"
+ * (column J) is the number of seats booked, filled in automatically.
  *
  * Actions (POST body is JSON):
  *   { action: "book", row: {...} }        append a booking unless one of its seats is
@@ -24,7 +25,7 @@ const TZ = "Asia/Kolkata";
 const HEADERS = [
   "Booking Timestamp (IST)", "Booking ID", "Reservation Date", "Selected Timings",
   "Number of Tables", "Table Numbers", "Customer Name", "Phone Number", "Traffic Source",
-  "Number of Seats",
+  "Number of People",
 ];
 const COL = { date: 2, timings: 3, tables: 5 }; // zero-based
 /** Seats per table, from the owner's floor plan (20 Nov 2026). */
@@ -60,7 +61,15 @@ function cellDate(v) {
  *  time value comes back as a Date, so format it in the sheet's own time zone. */
 function cellSlots(v, tz) {
   if (v instanceof Date) return [Utilities.formatDate(v, tz, "h:mm a")];
-  return String(v).split(",").map(function (s) { return s.trim(); }).filter(String);
+  return String(v).split(",").map(function (s) { return slotLabel(s.trim()); }).filter(String);
+}
+
+/** "19:30" or "19:30:00" → "7:30 PM" (Sheets can store a lone time this way); "7:30 PM" stays. */
+function slotLabel(s) {
+  const m = /^(\d{1,2}):(\d{2})(?::\d{2})?$/.exec(s);
+  if (!m) return s.replace(/\s+/g, " ").toUpperCase().replace(/^0/, "");
+  const h = Number(m[1]);
+  return ((h + 11) % 12 + 1) + ":" + m[2] + " " + (h < 12 ? "AM" : "PM");
 }
 
 function wholeTable(t) {
@@ -142,7 +151,7 @@ function doPost(e) {
     ensureHeaders(sheet);
     const taken = takenOn(sheet, String(row.date));
     const clash = [];
-    String(row.timings).split(",").map(function (s) { return s.trim(); }).forEach(function (slot) {
+    String(row.timings).split(",").map(function (s) { return slotLabel(s.trim()); }).forEach(function (slot) {
       seats.forEach(function (s) {
         if (taken[slot] && taken[slot][s]) clash.push({ slot: slot, seat: s, table: Number(s.slice(1, s.indexOf("-"))) });
       });
