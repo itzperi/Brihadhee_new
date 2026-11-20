@@ -385,6 +385,10 @@ main[tabindex="-1"]:focus {
   align-items: center;
   gap: 0.5rem;
 }
+/* Below 900px the mobile CallBar carries "Reserve table", so the header keeps one button. */
+@media (max-width: 899.98px) {
+  .nav__reserve { display: none; }
+}
 .nav__toggle {
   display: none;
   place-items: center;

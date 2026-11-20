@@ -91,6 +91,9 @@ const schema = pageGraph({
             <a class="btn btn--ghost" href={telHref}>
               <Icon name="phone" size={17} /> Call {phone}
             </a>
+            <a class="btn btn--ghost" href={href(ROUTES.reserve)} data-event="reserve_table_view_click">
+              <Icon name="clock" size={17} /> Reserve a table
+            </a>
           </div>
         </div>
         <div class="visit__map">

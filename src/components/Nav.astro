@@ -1,5 +1,5 @@
 ---
-import { site, pageContact } from "../data/site.js";
+import { site, pageContact, ROUTES } from "../data/site.js";
 const base = import.meta.env.BASE_URL.endsWith("/")
   ? import.meta.env.BASE_URL
   : `${import.meta.env.BASE_URL}/`;
@@ -75,6 +75,10 @@ const groupIsHere = (item) => item.children.some((c) => isHere(c.href));
           </a>
         )
       }
+      <a class="btn btn--ghost btn--sm nav__reserve" href={link(ROUTES.reserve)} data-event="reserve_table_view_click">
+        <Icon name="clock" size={16} />
+        <span>Reserve a table</span>
+      </a>
       <a class="nav__fallback" href="#footer-explore">Menu</a>
       <button
         class="nav__toggle"
@@ -131,5 +135,9 @@ const groupIsHere = (item) => item.children.some((c) => isHere(c.href));
         </a>
       )
     }
+    <a class="btn btn--ghost" href={link(ROUTES.reserve)} data-event="reserve_table_view_click">
+      <Icon name="clock" size={17} />
+      Reserve a table
+    </a>
   </div>
 </header>

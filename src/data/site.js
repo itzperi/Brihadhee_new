@@ -32,6 +32,7 @@ export const ROUTES = {
   dinner: "/veg-dinner-anna-nagar/",
   about: "/about/",
   book: "/book-a-table/",
+  reserve: "/reserve-table/", // online booking (writes the bookings Google Sheet); noindex
   eventCatering: "/catering-services-chennai/",
   corporateCatering: "/corporate-catering-chennai/",
   plannerPartner: "/event-planner-catering-partner/",

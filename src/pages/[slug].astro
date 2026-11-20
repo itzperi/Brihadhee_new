@@ -131,7 +131,7 @@ const cp = corporatePage;
   <Nav homeBase={base} />
   {isCorporate ? (
   <main id="main" tabindex="-1">
-    <PageHeader eyebrow="Corporate catering · Chennai" h1={m.h1} intro={cp.intro} primaryAction={quoteAction} showDirections={false} />
+    <PageHeader eyebrow="Corporate catering · Chennai" h1={m.h1} intro={cp.intro} primaryAction={quoteAction} showDirections={false} showReserve={false} />
     <div class="container corporate-presentation-link"><a href="#catering-presentation">View the catering presentation <Icon name="arrowRight" size={17} /></a></div>
     {cp.clients && <ClientLogos {...cp.clients} />}
     <AtAGlance title="Brihadhee corporate catering: summary" rows={cp.glance} />
@@ -173,7 +173,7 @@ const cp = corporatePage;
         ? `Brihadhee works with event management companies in Chennai on ${CATERING_DIET} regional menus and ${joinNatural(plannerModels)}. Share your client brief, venue and event schedule to discuss the menu, branding and service setup.`
         : opening}
       primaryAction={quoteAction}
-      showDirections={false}
+      showDirections={false} showReserve={false}
     />
     <AtAGlance title={isPlanner ? "Catering partnership at a glance" : "Event catering at a glance"} rows={isPlanner ? plannerGlance : eventGlance} />
 

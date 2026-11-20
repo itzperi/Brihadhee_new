@@ -34,7 +34,7 @@ const schema = pageGraph({
       h1={page.h1}
       intro={page.intro}
       menuHref={href(ROUTES.menu)}
-      primaryAction={{ label: "Book a table for dinner", href: href(ROUTES.book) }}
+      primaryAction={{ label: "Book a table for dinner", href: href(ROUTES.reserve), event: "reserve_table_view_click" }}
     />
     <AtAGlance title="Dinner at Brihadhee: summary" rows={page.glance} />
 

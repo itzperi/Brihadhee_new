@@ -454,7 +454,7 @@ function buildFamily() {
     eyebrow: "Family dining · Anna Nagar East",
     intro: `${name} is a ${PV} family restaurant in ${NEAR}, open every day from ${HOURS} for lunch and dinner. No meat, egg or fish is cooked in its kitchen and alcohol is not served, so vegetarian families can order anything on the menu. For a group table, call ${phone} so the restaurant can check seating.`,
     menuHref: href(ROUTES.menu),
-    primaryAction: { label: "Book a family table", href: href(ROUTES.book) },
+    primaryAction: { label: "Book a family table", href: href(ROUTES.reserve), event: "reserve_table_view_click" },
     glanceTitle: `Family dining at ${name}: summary`,
     glance: [
       ["Who", `${name}, a South Indian vegetarian restaurant in ${NEAR}`],
