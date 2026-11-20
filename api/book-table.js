@@ -1,16 +1,16 @@
 /**
  * /api/book-table: table bookings from /reserve-table/ (Vercel Function, Node runtime).
  *
- *   POST { date, slots, tables, name, phone, source, company }  → book
+ *   POST { date, slots, seats, name, phone, source, company }  → book
  *        200 { ok, booking }      written to the sheet
- *        409 { ok:false, error:"taken", taken:[{ slot, table }] }
+ *        409 { ok:false, error:"taken", taken:[{ slot, seat }] }
  *        422 { ok:false, errors } 503 not configured, 502 sheet error
  *   GET  ?date=YYYY-MM-DD                                       → availability
- *        200 { ok, taken: { "13:00": [2, 5], … } }  (no personal data)
+ *        200 { ok, taken: { "13:00": ["D1-1", "D4-3"], … } }  (no personal data)
  *
  * The Google Sheet "Brihadhee Table Bookings — Live Tracker" is the only store.
  * Its Apps Script Web App (docs/reserve-table/apps-script.gs) appends the row and
- * refuses a table that is already booked for an overlapping slot, under a lock.
+ * refuses a seat that is already booked for an overlapping slot, under a lock.
  * The browser never sees the Web App URL or the secret, and CSP connect-src
  * stays 'self'.
  *
@@ -18,7 +18,7 @@
  *   BOOKING_SHEET_WEBHOOK_URL  required. The Web App's https://script.google.com/macros/s/…/exec URL
  *   BOOKING_SHEET_SECRET       required. Must equal SECRET in the Apps Script
  */
-import { validateBooking, bookingId, sheetPayload, slotLabel, SLOTS, istNow } from "../src/lib/reserve.js";
+import { validateBooking, bookingId, sheetPayload, slotLabel, sortSeats, SLOTS, SEATS, istNow } from "../src/lib/reserve.js";
 
 const MAX_BODY = 8 * 1024;
 const TIMEOUT_MS = 15000;
@@ -30,6 +30,7 @@ const json = (status, body) =>
   });
 
 const LABEL_TO_SLOT = new Map(SLOTS.map((s) => [slotLabel(s), s]));
+const SEAT_SET = new Set(SEATS);
 
 async function callSheet(env, body, fetchImpl) {
   const res = await fetchImpl(env.BOOKING_SHEET_WEBHOOK_URL, {
@@ -79,9 +80,9 @@ export async function handleBooking(request, { env = process.env, now = Date.now
     console.error("[book-table] sheet call failed:", e.message);
     return json(502, { ok: false, error: "sheet_failed" });
   }
-  if (reply?.ok) return json(200, { ok: true, booking: { ...row, slotIds: undefined, tableIds: undefined } });
+  if (reply?.ok) return json(200, { ok: true, booking: { ...row, slotIds: undefined } });
   if (reply?.error === "taken") {
-    const taken = (reply.taken || []).map((t) => ({ slot: LABEL_TO_SLOT.get(t.slot) ?? t.slot, table: Number(t.table) }));
+    const taken = (reply.taken || []).map((t) => ({ slot: LABEL_TO_SLOT.get(t.slot) ?? t.slot, seat: String(t.seat) }));
     return json(409, { ok: false, error: "taken", taken });
   }
   console.error("[book-table] sheet refused:", reply?.error);
@@ -96,9 +97,9 @@ export async function handleAvailability(request, { env = process.env, fetchImpl
     const reply = await callSheet(env, { action: "availability", date }, fetchImpl);
     if (!reply?.ok) throw new Error(reply?.error || "refused");
     const taken = {};
-    for (const [label, tables] of Object.entries(reply.taken || {})) {
+    for (const [label, seats] of Object.entries(reply.taken || {})) {
       const slot = LABEL_TO_SLOT.get(label);
-      if (slot) taken[slot] = [...new Set(tables.map(Number))].sort((a, b) => a - b);
+      if (slot) taken[slot] = sortSeats(seats.map(String).filter((id) => SEAT_SET.has(id)));
     }
     return json(200, { ok: true, date, taken });
   } catch (e) {
