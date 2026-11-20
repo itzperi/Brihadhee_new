@@ -13,7 +13,7 @@ const {
   ogDescription = null, // optional: distinct social-card text; falls back to description
   schema = null, // optional: replaces the default Restaurant + FAQ JSON-LD
   noindex = false, // true for utility pages (privacy, 404); they are also kept out of the sitemap
-  cta = "book", // mobile CTA bar: "book" (Book a table) or "quote" (Get a quote, catering pages)
+  cta = "book", // mobile CTA bar: "book" (Book a table), "quote" (Get a quote, catering pages) or "none" (ad funnel pages with their own sticky bar)
   quoteAction, // optional intent-specific action in the mobile catering bar
 } = Astro.props;
 
@@ -140,7 +140,7 @@ const base = import.meta.env.BASE_URL.endsWith("/")
   <body>
     <a class="skip-link" href="#main">Skip to content</a>
     <slot />
-    <CallBar mode={cta} quoteAction={quoteAction} />
+    {cta !== "none" && <CallBar mode={cta} quoteAction={quoteAction} />}
     <script>
       import "../scripts/main.js";
     </script>
