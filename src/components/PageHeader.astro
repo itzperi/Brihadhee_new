@@ -1,11 +1,12 @@
 ---
 import Icon from "./Icon.astro";
 import Breadcrumbs from "./Breadcrumbs.astro";
-import { site, pageContact } from "../data/site.js";
+import { site, pageContact, ROUTES, href } from "../data/site.js";
 
 // Top of every inner page: eyebrow, the single H1, an answer-first intro and
 // the call / directions / menu actions.
-const { eyebrow, h1, intro, menuHref, primaryAction, showDirections = true } = Astro.props;
+// showReserve: the "Reserve a table" button (online booking). Off on catering pages.
+const { eyebrow, h1, intro, menuHref, primaryAction, showDirections = true, showReserve = true } = Astro.props;
 const { phone, telHref, hasPhone } = pageContact(Astro);
 ---
 
@@ -20,6 +21,11 @@ const { phone, telHref, hasPhone } = pageContact(Astro);
       {hasPhone && (
         <a class:list={["btn", primaryAction ? "btn--ghost" : "btn--primary"]} href={telHref}>
           <Icon name="phone" size={17} /> Call {phone}
+        </a>
+      )}
+      {showReserve && (
+        <a class="btn btn--ghost" href={href(ROUTES.reserve)} data-event="reserve_table_view_click">
+          <Icon name="clock" size={17} /> Reserve a table
         </a>
       )}
       {showDirections && (

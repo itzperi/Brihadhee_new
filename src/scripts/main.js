@@ -646,6 +646,7 @@ function inferEvent(el) {
   if (/google\.[a-z.]+\/maps|maps\.app\.goo\.gl|goo\.gl\/maps/.test(href)) return "directions_click";
   if (/eazydiner\.com|\/dineout|district\.in/.test(href)) return "book_table_click";
   if (/\/book-a-table\/?(?:[#?]|$)/.test(href)) return "book_table_view_click";
+  if (/\/reserve-table\/?(?:[#?]|$)/.test(href)) return "reserve_table_view_click";
   if (/swiggy\.com|zomato\.com/.test(href)) return "order_click";
   return "";
 }

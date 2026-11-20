@@ -132,6 +132,7 @@ const phone = getFact("phone");
     const s = params.get("utm_source"), m = params.get("utm_medium"), c = params.get("utm_campaign");
     if (s) return [s, m, c].filter(Boolean).join(" / ");
     if (params.get("fbclid")) return "facebook/instagram (fbclid)";
+    if (params.get("ref")) return `website: ${params.get("ref")}`;
     try {
       const ref = document.referrer && new URL(document.referrer).hostname;
       if (ref && ref !== location.hostname) return `referral: ${ref}`;

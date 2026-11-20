@@ -77,8 +77,17 @@ const description = `Pick a date and time to reserve a table at ${site.name}, th
   if (!date || !openSlots(date).length) date = firstOpenDate();
   let selected = new Set(parseSlots(params.get("slots")));
 
+  // Arrived from a button elsewhere on brihadhee.com: keep the page path, so the
+  // booking's traffic source reads "website: /menu/" instead of "direct".
+  if (!params.get("utm_source") && !params.get("fbclid") && !params.get("ref")) {
+    try {
+      const ref = document.referrer && new URL(document.referrer);
+      if (ref && ref.hostname === location.hostname && !ref.pathname.startsWith("/reserve-table")) params.set("ref", ref.pathname.slice(0, 80));
+    } catch {}
+  }
+
   function nextUrl() {
-    const q = new URLSearchParams(location.search);
+    const q = new URLSearchParams(params);
     q.set("date", date);
     q.set("slots", [...selected].sort().join(","));
     return q;
