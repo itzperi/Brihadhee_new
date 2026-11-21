@@ -127,9 +127,9 @@ function buildSmallFunctions() {
         "For a birthday, housewarming or get-together, share the date, venue and headcount to discuss a menu and check availability."
     ),
     qa(
-      `Does ${name} cater for ${MIN} guests?`,
-      `Yes. ${name} caters for ${MIN} guests at a single event in Chennai. ` +
-        `${MIN} is the event minimum and ${num(guests.max)} is the maximum. Share your date, venue and menu preferences with the catering team.`,
+      `What is the minimum catering order at ${name}?`,
+      `${name}'s minimum catering order is ${MIN} guests for a single event in Chennai. ` +
+        `Events can go up to ${num(guests.max)} guests. Share your date, venue and menu preferences with the catering team.`,
       { id: "what-is-the-minimum-guest-count-for-brihadhee-catering" }
     ),
     qa(
