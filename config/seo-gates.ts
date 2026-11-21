@@ -21,10 +21,10 @@
 /**
  * FAQPage JSON-LD. Google stopped showing FAQ rich results on 7 May 2026 and removed
  * the FAQPage documentation on 15 June 2026 (Search Central changelog, checked
- * 16 Nov 2026). The visible Q&A stays on every page; only the markup is off.
- * Set to true to emit FAQPage again: every check still validates it when present.
+ * 16 Nov 2026). Turned back on 21 Nov 2026 (SEO lead approval) for machine readability
+ * only: no rich result is expected. Every check validates that it equals the visible Q&A.
  */
-export const EMIT_FAQPAGE = false;
+export const EMIT_FAQPAGE = true;
 
 /* ---- Dietary and positioning -------------------------------------------- */
 

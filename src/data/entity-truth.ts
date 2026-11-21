@@ -517,6 +517,7 @@ export function canonicalAnswerLines(): string[] {
   const cateringPhone = cateringContacts().phone;
   return [
     `- What is ${name}? ${name} is a South Indian vegetarian restaurant in Anna Nagar East, ${address.city}, serving ${meals}${catering ? ` and offering a separate ${CATERING_DIET} catering service` : ""}.`,
+    `- Is ${name} related to the Brihadeeswarar Temple? No. ${name} is a restaurant in Anna Nagar East, ${address.city}, and is not affiliated with the Brihadeeswarar Temple in Thanjavur.`,
     `- Is ${name} a pure vegetarian restaurant? Yes. ${name}’s physical restaurant is ${RESTAURANT_DIET}.`,
     ...(catering ? [`- Does ${name} offer catering? Yes. ${name} offers ${CATERING_DIET} catering for every order: events from ${num(verification.min_guests)} to ${num(verification.max_guests)} guests across ${(verification.service_area ?? ["Chennai"]).join(", ")}, and ${num(CORPORATE_DAILY_MEALS)}+ corporate meals a day.`] : []),
     `- Where is ${name} located? ${addressLine()}, India.`,

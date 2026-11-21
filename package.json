@@ -17,6 +17,7 @@
     "check:seo": "node scripts/validate-schema.js && node scripts/schema-visible.mjs && node scripts/aeo-lint.mjs && node scripts/check-seo.mjs",
     "check:links": "node scripts/check-links.mjs && node scripts/check-internal-links.mjs",
     "check:links:external": "node scripts/check-links.mjs dist --external",
+    "check:live": "node scripts/check-live.mjs",
     "indexnow": "node scripts/indexnow.mjs",
     "validate": "npm run check",
     "test": "node --test scripts/lead.test.mjs scripts/aeo.test.mjs scripts/schema-visible.test.mjs scripts/reserve.test.mjs",

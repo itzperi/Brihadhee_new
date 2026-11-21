@@ -127,3 +127,14 @@ Evidence is in [`11-gsc-baseline.md`](11-gsc-baseline.md). Every step below need
 | F3 | Before ads run | **Rules.** Bookings open up to 30 days ahead, and any number of 30-minute slots and tables can be chosen. Should there be a maximum (for example 2 hours or 4 tables), a cut-off before the slot (for example 30 minutes), or a pre-booking discount (the partner offer applies only on partner apps)? | Owner | Open |
 | F4 | Now | **Sheet access.** The sheet is owned by brihadheemeta@gmail.com and is Restricted. Share it by email with the people who need it (Editor for reception, to delete a cancelled booking). It holds customer phone numbers, so don't use "Anyone with the link". | Owner | Open |
 | F5 | To go live | Add `BOOKING_SHEET_WEBHOOK_URL` and `BOOKING_SHEET_SECRET` in Vercel (values in `.env.local` on the dev machine), push `feat/reserve-table`, merge, deploy, then check `/reserve-table` returns 200. | Developer | Open |
+
+## G. From the 21 Nov 2026 baseline (`18-turn1-baseline.md`)
+
+| ID | Priority | Question or action | Who | Status |
+|---|---|---|---|---|
+| G1 | Before batch 3 | **Dosa name.** The homepage, nav and Restaurant `knownFor` say "Customized Dosa" (your direction, 13 Nov). The dosa page, menu schema, `llms.txt` and catering counters say "Build Your Own Dosa". Recommended: "Build Your Own Dosa" as the one name, with "also called Customized Dosa" in every definition. The dosa page title, H1 and URL stay as they are. Yes, or keep "Customized Dosa"? | Owner | Open |
+| G2 | Soon | **Idly and mini idly.** The menu has an "Idly & Mini Idly" section (Ghee Mini Sambar Idly, Gun Powder Idly). Are these served during lunch and dinner, 11 AM to 11 PM? If not, they come off the menu pages. | Owner | Open |
+| G3 | Soon | **Tamil name.** Google Business Profile shows ப்ரிஹதீ; the website shows பிரிஹதீ. Which spelling is correct? The other will be listed as a variant. | Owner | Open |
+| G4 | Today | **Apex redirect.** `https://brihadhee.com/` redirects to www with a 307 (temporary). In Vercel → Project → Settings → Domains → `brihadhee.com`, set the redirect to `www.brihadhee.com` as **308 Permanent**. Then `npm run check:live` should pass. | Owner or developer | Open |
+| G5 | Today | **Karthigai page indexing.** In Search Console, run URL Inspection → Request indexing for `/seasonal/karthigai-ayyappa-pure-veg/` before Karthigai Deepam on 24 Nov, and screenshot the result into `evidence/`. Needs D4 access. | Owner or developer | Open |
+

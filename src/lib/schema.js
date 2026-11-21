@@ -7,7 +7,7 @@
  *   WebPage (<page>#webpage)       isPartOf WebSite; mainEntity points at the page's subject
  *                                  when modeled; breadcrumb links to a real trail on inner pages
  *   FAQPage (<page>#faq)           isPartOf its WebPage; built from the SAME data as the visible FAQ
- *                                  (only while EMIT_FAQPAGE is on; off since 16 Nov 2026)
+ *                                  (only while EMIT_FAQPAGE is on; off 16 Nov, on again 21 Nov 2026)
  *   Service (#catering)           shared catering identity, provider -> Restaurant
  *   Service (<page>#service)      page-specific offer, related to #catering
  * Restaurant is already a schema.org FoodEstablishment subtype, so no second
@@ -28,6 +28,7 @@ import { site, ROUTES, hasHours, assetUrl, pageContentUpdated, NAME_SPELLINGS, N
 import { getFact, factOr, RESTAURANT_ID, CATERING_ID, cateringContacts, toE164, BYO_DEFINITION } from "../data/entity-truth.ts";
 import verification from "../../config/client-verification.json";
 import { MENU_NOTES } from "../data/menu-canonical.ts";
+import { allItems, priceRange, summarise } from "./menu-facts.js";
 
 import { faqItems } from "../data/faq.js";
 import { CATERING_DIET, EMIT_FAQPAGE } from "../../config/seo-gates.ts";
@@ -84,7 +85,8 @@ export function restaurantSchema() {
       (src) => assetUrl(src)
     ),
     servesCuisine: getFact("cuisines"),
-    // No priceRange: the owner-verified "₹₹" is not shown on any page, and markup must match visible content.
+    // The visible dish price range (home and menu FAQs quote the same numbers), not the unshown "₹₹".
+    priceRange: priceRange(summarise(allItems)),
     currenciesAccepted: "INR",
     address: {
       "@type": "PostalAddress",
@@ -101,6 +103,7 @@ export function restaurantSchema() {
     },
     ...(hours.length ? { openingHoursSpecification: hours } : {}),
     hasMap: getFact("mapUrl"),
+    areaServed: (verification.service_area?.length ? verification.service_area : ["Chennai"]).map((name) => ({ "@type": "City", name })),
     telephone: toE164(getFact("phone")),
     email: getFact("email"),
     ...(sameAs.length ? { sameAs } : {}),
