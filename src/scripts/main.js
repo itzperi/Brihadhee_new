@@ -635,10 +635,26 @@ if (typeof window.fbq === "function") {
   document.addEventListener("click", (e) => {
     const el = e.target instanceof Element ? e.target.closest("a[href], [data-event]") : null;
     if (!el || el.tagName === "FORM") return;
-    trackMeta(inferEvent(el));
+    // Meta keeps the original names: Schedule only for partner bookings, as before Phase 4.
+    trackMeta(rawEvent(el));
   });
 }
-function inferEvent(el) {
+/* GA4 conversion names (Phase 4, 24 Nov 2026). Calls and WhatsApp are named by the number
+ * dialled (Base.astro puts the dining and catering numbers on <body> as data-tel-*), so the
+ * restaurant number in a catering page's footer still counts as dine-in and any other number
+ * stays click_call. Every booking link, on-site or partner, is click_book_table with its channel. */
+const { telDine = "", telCatering = "" } = document.body.dataset;
+const dialled = (el) => (el?.getAttribute("href")?.match(/(?:tel:|wa\.me\/)([+\d\s()-]+)/)?.[1] ?? "").replace(/\D/g, "");
+const BOOKING = { book_table_view_click: "book-a-table", reserve_table_view_click: "reserve-table", book_table_click: "partner" };
+function conversion(name, el) {
+  const n = dialled(el);
+  const catering = Boolean(telCatering && n.endsWith(telCatering));
+  if (name === "click_call") return [catering ? "click_call_catering" : telDine && n.endsWith(telDine) ? "click_call_dinein" : "click_call", {}];
+  if (name === "click_whatsapp" && catering) return ["click_whatsapp_catering", {}];
+  if (BOOKING[name]) return ["click_book_table", { booking_channel: BOOKING[name] }];
+  return [name, {}];
+}
+function rawEvent(el) {
   if (el.dataset.event) return el.dataset.event;
   const href = el.getAttribute("href") || "";
   if (href.startsWith("tel:")) return "click_call";
@@ -654,8 +670,8 @@ if (typeof window.gtag === "function") {
   document.addEventListener("click", (e) => {
     const el = e.target instanceof Element ? e.target.closest("a[href], [data-event]") : null;
     if (!el || el.tagName === "FORM") return;
-    const name = inferEvent(el);
-    if (name) window.gtag("event", name, { link_text: (el.textContent || "").trim().slice(0, 60), page_path: location.pathname });
+    const [name, extra] = conversion(rawEvent(el), el);
+    if (name) window.gtag("event", name, { ...extra, link_text: (el.textContent || "").trim().slice(0, 60), page_path: location.pathname });
   });
 }
 
@@ -664,6 +680,8 @@ function track(name, params = {}) {
   if (typeof window.gtag === "function") window.gtag("event", name, { ...params, page_path: location.pathname });
   trackMeta(name);
 }
+// The offers hub counts as a view of the offers, wherever the visitor came from.
+if (location.pathname === "/offers/") track("view_offers_hub");
 
 /* ---------------- Nav dropdowns: Menu and Catering (Nav.astro <details>) ----------------
  * Desktop dropdowns and the mobile drawer's groups. They work without JavaScript;

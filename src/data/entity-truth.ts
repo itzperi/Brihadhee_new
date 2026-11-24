@@ -315,6 +315,7 @@ export const FACTS = {
       "Pro Chant",
       "Prodapt",
       "Stark Event Management",
+      "Madharsha Group", // added at the Brihadhee team's request, 2026-11-24
     ],
     CLIENT_LIST,
     D14

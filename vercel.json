@@ -1,5 +1,6 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
+  "trailingSlash": true,
   "redirects": [
     {
       "source": "/:path(.*)",
@@ -14,9 +15,7 @@
       "statusCode": 301
     },
     { "source": "/best-dosa-parotta-anna-nagar/", "destination": "/menu/dosa/", "statusCode": 301 },
-    { "source": "/best-dosa-parotta-anna-nagar", "destination": "/menu/dosa/", "statusCode": 301 },
-    { "source": "/nellai-meals-south-indian-veg-anna-nagar/", "destination": "/menu/nellai-meals/", "statusCode": 301 },
-    { "source": "/nellai-meals-south-indian-veg-anna-nagar", "destination": "/menu/nellai-meals/", "statusCode": 301 }
+    { "source": "/nellai-meals-south-indian-veg-anna-nagar/", "destination": "/menu/nellai-meals/", "statusCode": 301 }
   ],
   "headers": [
     {

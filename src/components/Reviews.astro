@@ -5,12 +5,13 @@
  * and the rating card only when googleRating is confirmed in entity-truth.ts.
  * Until then this is an honest empty state that sends guests to Google.
  */
-import { site } from "../data/site.js";
+import { site, ROUTES, href } from "../data/site.js";
 import { getFact } from "../data/entity-truth.ts";
 import Stars from "./Stars.astro";
 
 const { rating, testimonials } = site;
 const mapUrl = getFact("mapUrl");
+const knownFor = getFact("knownFor").filter((k) => !/catering/i.test(k));
 ---
 
 <section class="section section--tint" id="reviews" aria-labelledby="reviews-title">
@@ -74,6 +75,8 @@ const mapUrl = getFact("mapUrl");
             </p>
           )
         }
+        {/* Owner-confirmed pillars (entity-truth.ts knownFor), not a ranking of orders: no order data is verified. */}
+        <p class="reviews__lead">{site.name} is known for {knownFor.join(", ")}. <a href={href(ROUTES.menu)}>See them on the menu with prices</a>.</p>
       </div>
     </div>
   </div>

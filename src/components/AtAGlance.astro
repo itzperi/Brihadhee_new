@@ -18,6 +18,7 @@ const {
     ["Good for", `lunch, dinner, family meals, regional Tamil dishes, and ${CATERING_DIET} event catering`],
   ],
   id = "at-a-glance",
+  lead = "",
 } = Astro.props;
 const { phone, telHref } = pageContact(Astro);
 const phoneLabel = Astro.locals.contact ? "Catering phone" : "Restaurant phone";
@@ -27,6 +28,7 @@ const phoneLabel = Astro.locals.contact ? "Catering phone" : "Restaurant phone";
   <div class="container">
     <aside class="glance__box" aria-labelledby={`${id}-title`}>
       <h2 class="glance__title" id={`${id}-title`}>{title}</h2>
+      {lead && <p class="glance__lead">{lead}</p>}
       <dl class="glance__list">
         {
           rows.map(([term, value]) => (

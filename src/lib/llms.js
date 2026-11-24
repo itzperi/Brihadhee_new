@@ -8,9 +8,9 @@ import { site, NAME_SPELLINGS, NAME_TAMIL_VARIANT } from "../data/site.js";
 import { getFact, factOr, FACTS, canonicalAnswerLines, landmarkSentence, openingTimes, FACTS_LAST_CONFIRMED, longDate } from "../data/entity-truth.ts";
 import { faqItems, aboutFaq, menuFaq, bookingFaq } from "../data/faq.js";
 import { homePage, dosaPage, nellaiPage, dinnerPage, whatsNewPage, seasonalPage } from "../data/pages.js";
-import { nellaiGuide } from "../data/guides.js";
+import { nellaiGuide, karaikudiNellaiGuide } from "../data/guides.js";
 import { parottaPage } from "../data/parotta.js";
-import { categories, priceRange, itemCount, allVegetarian, rupees, byo, menuNotes } from "./menu-facts.js";
+import { categories, priceRange, itemCount, allVegetarian, rupees, byo, menuNotes, allItems, summarise } from "./menu-facts.js";
 import { UNPRICED_SIGNATURES } from "../data/menu-canonical.ts";
 import {
   cateringEnabled,
@@ -54,6 +54,23 @@ export function buildLlms({ full = false } = {}) {
     ""
   );
   push("**Canonical answers**", "", ...canonicalAnswerLines(), "", `Facts last confirmed with the owner: ${longDate(FACTS_LAST_CONFIRMED)}. Full verified list: ${u("/about/#facts")}`, "");
+
+  if (!full) {
+    // Short-file ground truth: signature dish prices, offers and named corporate clients, all from verified sources.
+    const signature = ["Nellai Special Sodhi Meals", "Paanai Parotta", "Karaikudi Paneer Poppers", "Filter Coffee"]
+      .map((n) => allItems.find((i) => i.name === n)).filter(Boolean);
+    const batters = byo.steps.find((st) => st.name === "Batter").options;
+    const clients = factOr("corporateClients", []);
+    push("## Key facts", "");
+    push("- Diet: 100% pure vegetarian. No meat, egg or fish is cooked in the restaurant kitchen.");
+    push(`- Menu prices: ${priceRange(summarise(allItems))} per dish, before 5% GST. ${signature.map((i) => `${i.name} ${rupees(i.price)}`).join("; ")}; Build Your Own Dosa batters ${priceRange(summarise(batters))}.`);
+    for (const o of offers) push(`- Offer: ${o.description}.`);
+    // Client keyword rules, 24 Nov 2026: minimum 50, corporate scale, and quotes instead of published per-plate rates.
+    if (cateringEnabled && guests)
+      push(`- Catering: ${CATERING_DIET} catering from ${guests.min.toLocaleString("en-IN")} guests (end-to-end event catering up to ${guests.max.toLocaleString("en-IN")}) and ${CORPORATE_DAILY_SCALE} for offices. Each order is quoted per event; no fixed per-plate rate is published.`);
+    if (cateringEnabled && clients.length) push(`- Corporate catering clients: ${clients.join(", ")}.`);
+    push("");
+  }
 
   if (full) {
     push("## Facts", "");
@@ -99,6 +116,7 @@ export function buildLlms({ full = false } = {}) {
   push(`- [What's new](${u(whatsNewPage.path)}): build-your-own dosa, Nellai lunch, dinner until ${openingTimes().close}${corporatePage ? ", corporate catering" : ""}`);
   push(`- [Karthigai and Ayyappa mala](${u(seasonalPage.path)}): pure veg lunch and dinner in Chennai${seasonalPage.sections.some(({ id }) => id === "group-catering") ? `, plus ${CATERING_DIET} group catering` : ""}`);
   push(`- [Guide: What are Nellai meals?](${u(nellaiGuide.path)}): sodhi, ulundhu kali, Tirunelveli cuisine and idiyappam pairings`);
+  push(`- [Guide: Karaikudi vs Nellai vegetarian food](${u(karaikudiNellaiGuide.path)}): coconut-milk sodhi and ulundhu kali compared with Karaikudi spice blends, with prices`);
   if (!full) {
     push("", "## Optional", "", `- [Full reference](${u("/llms-full.txt")}): full menu, offers, and customer questions`);
     return out.join("\n").trimEnd() + "\n";

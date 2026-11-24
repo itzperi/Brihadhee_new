@@ -18,7 +18,7 @@
  * menu-canonical.ts, and every claim the client has not confirmed behind a gate in
  * config/seo-gates.ts. No competitor names; no "best" claims outside question headings.
  */
-import { getFact, openingTimes, RESTAURANT_DIET as PV, FACTS_LAST_CONFIRMED } from "./entity-truth.ts";
+import { getFact, openingTimes, RESTAURANT_DIET as PV, FACTS_LAST_CONFIRMED, FACTS, longDate } from "./entity-truth.ts";
 import * as GATES from "../../config/seo-gates.ts";
 import { ROUTES, href, telHref } from "./site.js";
 import { qa, qaRoute, claimQuestion, list } from "../lib/answers.js";
@@ -118,8 +118,8 @@ function buildSmallFunctions() {
   const path = ROUTES.smallFunctions;
   const quoteHref = `${href(ROUTES.cateringQuote)}#enquiry`;
   const hasRegionalMenu = verification.menu_formats?.includes("regional_menus");
-  const title = `Small Function Catering in Chennai, ${MIN}+ Guests | ${name}`;
-  const description = `${cap(CD)} catering for birthdays, housewarmings and family gatherings in Chennai from ${MIN} guests. Share your date, venue and headcount.`;
+  const title = `Small Function Veg Catering Chennai (${MIN}+ Guests) | ${name}`;
+  const description = `100% pure veg catering in Chennai from ${MIN} guests: birthdays, Gruhapravesam & Valaikaapu. Tirunelveli meals & live dosa counter. Quote: +91 94442 24999.`;
   const faq = qaRoute(path, [
     qa(
       "Who does small function catering in Anna Nagar?",
@@ -134,8 +134,8 @@ function buildSmallFunctions() {
     ),
     qa(
       "How much does vegetarian catering cost per plate in Chennai?",
-      `${name} quotes ${CD} catering per plate for each function. ` +
-        "The menu, headcount, counters and service requirements help shape the price. Share these details and what you plan to spend when you request a quote.",
+      `${name} quotes ${CD} catering per plate for each function and does not publish a fixed rate. ` +
+        `The price depends on the event type and occasion, lunch or dinner, the headcount (from ${MIN} guests), your must-have dishes, the spend you have in mind and whether you need serving staff. Share these when you request a quote.`,
       { kind: "explain" }
     ),
     qa(
@@ -170,7 +170,7 @@ function buildSmallFunctions() {
     description,
     h1: `Small Function Catering in Chennai, From ${MIN} Guests`,
     eyebrow: "Small functions · Chennai",
-    intro: `${name} provides ${CD} catering for birthdays, housewarmings and family get-togethers across Chennai from ${MIN} guests. Share your date, venue and estimated headcount with the Anna Nagar East team to discuss a South Indian menu for your gathering.`,
+    intro: `${name} provides ${CD} catering for birthdays, small parties, housewarmings and family get-togethers across Chennai from ${MIN} guests. Share your date, venue and estimated headcount with the Anna Nagar East team to discuss a South Indian menu for your gathering.`,
     tamil: `அண்ணா நகர் கிழக்கில் உள்ள பிரிஹதீ குழு, சென்னையில் ${MIN} பேர் முதல் பங்கேற்கும் குடும்ப விழாக்களுக்கு ${GATES.CATERING_DIET_TA} கேட்டரிங் வழங்குகிறது. மெனுவைப் பற்றிப் பேச, விழாவின் தேதி, இடம், விருந்தினர் எண்ணிக்கை ஆகியவற்றைத் தெரிவியுங்கள்.`,
     cta: "quote",
     primaryAction: { label: "Request a small-function quote", shortLabel: "Function quote", href: quoteHref, event: "quote_cta_click" },
@@ -349,7 +349,7 @@ function buildQuote() {
     description,
     h1: `Get a ${CDtitle} Catering Quote in Chennai`,
     eyebrow: "Catering quote · Chennai",
-    intro: `Share your event date, Chennai venue and estimated headcount from ${MIN} guests. Brihadhee ${reply} to discuss the ${CD} menu, service requirements and per-plate quote.`,
+    intro: `To get a catering quote from Brihadhee in Chennai, share your event date, venue and estimated headcount from ${MIN} guests. Brihadhee ${reply} to discuss the ${CD} menu, service requirements and per-plate quote.`,
     cta: "quote",
     primaryAction: { label: "Go to the quote form", shortLabel: "Quote form", href: "#enquiry", event: "quote_cta_click" },
     showDirections: false,
@@ -470,7 +470,7 @@ function buildFamily() {
         id: "after-temple",
         title: "Family Lunch After a Morning Temple Visit",
         lead:
-          `${name} opens at ${OPEN} every day for families coming in after a morning temple visit. The vegetarian lunch menu includes ${sodhiMeals.name} (${rupees(sodhiMeals.price)}) and Tamil Nadu meals (${priceRange(tnMeals)}).` +
+          `${name} opens at ${OPEN} every day on ${STREET}, near ${getFact("landmarks")[0]}, for families coming in after a morning temple visit. For a large family group, call ahead so the team can arrange seating. The vegetarian lunch menu includes ${sodhiMeals.name} (${rupees(sodhiMeals.price)}) and Tamil Nadu meals (${priceRange(tnMeals)}).` +
           (temple ? ` ${temple.name} is on ${temple.where}.` : ""),
         dishes: [dish(sodhiMeals), ...lunch.items.filter((i) => /TN Meals/.test(i.name)).map(dish)],
         links: [{ label: "Veg lunch and Nellai meals in Anna Nagar", href: href(ROUTES.lunch) }],
@@ -501,7 +501,7 @@ function buildFamily() {
       {
         id: "family-booking",
         title: "Booking a Table for a Family Group",
-        lead: `When you call about a group table at ${name}, share your date, preferred time and party size so the team can check seating. For a regular table, use ${bookingAnd} or walk in. See [the address and directions](${ROUTES.about}#find-us) before you leave.`,
+        lead: `When you call about a group table at ${name}, share your date, preferred time and party size so the team can check seating. For a regular table, use ${bookingAnd} or walk in. The restaurant is on ${STREET}, near ${getFact("landmarks")[0]}; see [directions from ${list(getFact("directionLandmarks").map((l) => l.label).slice(1, 5))}](${ROUTES.about}#find-us) before you leave.`,
         tint: true,
         links: [
           { label: "How to book a table", href: href(ROUTES.book), primary: true },
@@ -751,4 +751,105 @@ function buildNoOnion() {
     }),
   };
 }
-export const noOnionPage = noOnionLive ? buildNoOnion() : null;
+// Gate off: built only for `astro dev` / SEO_GATES_PREVIEW=1, as a noindex draft that the
+// sitemap and llms files skip (they check `noindex`). A production build has no route.
+export const noOnionPage = noOnionLive
+  ? buildNoOnion()
+  : gatePreview
+    ? { ...buildNoOnion(), noindex: true, draftNote: "Not published: waits for the kitchen to confirm Q11-Q14 (dish list, ingredients, shared tawa, batter)." }
+    : null;
+
+/* ---- /offers/: dining offers hub (branded "brihadhee offers" searches) ------------- */
+function buildOffers() {
+  const path = ROUTES.offers;
+  const title = `${name} Offers (2026) | 10% Walk-In & Up to 40% Off`;
+  const description = `${name} offers, Anna Nagar East: ${walkIn} walk-in dine-in, up to 40% off Mon–Thu via Swiggy Dineout, EazyDiner & District, lunch combos ${rupees(combos.min)}–${rupees(combos.max)}.`;
+  const checked = FACTS.offers.verifiedOn;
+  const partners = getFact("bookingLinks");
+  const faq = qaRoute(path, [
+    qa(
+      `Does ${name} have any dining offers?`,
+      `Yes. ${name} gives ${walkIn} for walk-in dine-in, and ${prebook} on tables pre-booked through ${bookingAnd}. ` +
+        `Offers were last checked on ${longDate(checked)} and can change, so confirm the terms before you visit.`
+    ),
+    qa(
+      `When does the up to 40% off offer apply at ${name}?`,
+      `${name}'s pre-booking offer gives ${prebook}, on tables pre-booked through ${bookingAnd}. Walk-in diners at the ${NEAR} restaurant get ${walkIn}.`
+    ),
+  ]);
+  return {
+    path,
+    title,
+    description,
+    h1: `${name} Offers and Discounts`,
+    eyebrow: "Offers · Anna Nagar East",
+    intro: `${name} in ${NEAR} has two dining offers: ${walkIn} for walk-in dine-in, and ${prebook} when you pre-book a table through ${bookingAnd}. For a quick lunch, ${combos.count} dine-in combos cost ${priceRange(combos)}. Offers can change, so confirm the terms when you book.`,
+    menuHref: href(ROUTES.menu),
+    primaryAction: { label: "Book a table", href: href(ROUTES.book), event: "book_table_view_click" },
+    sections: [
+      {
+        id: "compare",
+        title: `Which Offers Can You Get at ${name}?`,
+        lead: `Compare ${name}'s offers below: the walk-in discount needs no booking, the larger discount needs a pre-booked table on a weekday, and the combos are set lunch plates.`,
+        table: {
+          caption: `${name} dining offers compared`,
+          head: ["Offer", "What you get", "Applies to", "How to get it"],
+          rows: [
+            ["Walk-in discount", walkIn, "Walk-in dine-in", "Walk in during opening hours"],
+            ["Pre-booking discount", prebook.replace(/ Monday to Thursday$/, ""), "Monday to Thursday, pre-booked tables", `Pre-book through ${bookingAnd}`],
+            ["Dine-in combos", priceRange(combos), "Lunch only, dine-in", "[See the combos on the menu](/menu/#combos)"],
+          ],
+        },
+        checked,
+        checkedLabel: "Offers last checked",
+        links: [
+          ...partners.map((p) => ({ label: `Pre-book on ${p.label}`, href: p.url, external: true })),
+          { label: "All ways to book a table", href: href(ROUTES.book), primary: true },
+        ],
+      },
+      {
+        id: "lunch-combos",
+        title: "What Do the Lunch Combos Cost?",
+        lead: `${name}'s ${combos.count} dine-in combos cost ${priceRange(combos)} and are served at lunch only. ${menuNotes.gst}`,
+        tint: true,
+        dishes: combos.items.map((i) => ({ name: i.name, price: rupees(i.price) })),
+        links: [{ label: "Full menu with prices", href: href(ROUTES.menu) }],
+      },
+    ],
+    faqTitle: "Offer questions",
+    faq,
+    related: [
+      { label: "Book a table in Anna Nagar East", href: href(ROUTES.book) },
+      { label: "Menu and prices", href: href(ROUTES.menu) },
+      { label: "Photos of the food", href: href(ROUTES.photos) },
+      { label: "Address and opening hours", href: href(ROUTES.about) },
+    ],
+    schema: () =>
+      pageGraph({ path, title, description, crumbs: [...HOME_CRUMBS, { name: "Offers", path }], extras: [faqPageSchema(path, faq)] }),
+  };
+}
+export const offersPage = buildOffers();
+
+/* ---- /photos/: photo hub (branded "brihadhee photos" searches) -------------------- */
+function buildPhotos() {
+  const path = ROUTES.photos;
+  const title = `${name} Photos | Pure Veg Dishes, Meals & Coffee`;
+  const description = `Photos of food at ${name}, Anna Nagar East: dosa, banana-leaf meals, idiyappam, filter coffee, desserts and packed office meals, with prices.`;
+  return {
+    path,
+    title,
+    description,
+    h1: `${name} Photos: Dosa, Meals and Coffee`,
+    eyebrow: "Photos · Anna Nagar East",
+    intro: `These photos show dishes served at ${name}, the South Indian vegetarian restaurant on ${STREET}: dosa, banana-leaf meals, idiyappam, filter coffee, desserts and packed office meals. Each group links to its place on the menu, where current prices are listed before GST.`,
+    menuHref: href(ROUTES.menu),
+    related: [
+      { label: "Menu and prices", href: href(ROUTES.menu) },
+      { label: "Offers and discounts", href: href(ROUTES.offers) },
+      { label: "Address and opening hours", href: href(ROUTES.about) },
+      { label: "Build your own dosa", href: href(ROUTES.dosa) },
+    ],
+    schema: () => pageGraph({ path, title, description, crumbs: [...HOME_CRUMBS, { name: "Photos", path }] }),
+  };
+}
+export const photosPage = buildPhotos();

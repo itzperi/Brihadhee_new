@@ -39,6 +39,7 @@ export const ROUTES = {
   whatsNew: "/whats-new/",
   seasonal: "/seasonal/karthigai-ayyappa-pure-veg/",
   nellaiGuide: "/guides/what-are-nellai-meals/",
+  karaikudiNellaiGuide: "/guides/karaikudi-vs-nellai-veg-cuisine/",
   /* 12 Nov keyword plan spokes (section 6). The gated one is built only when its
      gate in config/seo-gates.ts is on (or as a noindex draft in dev/preview). */
   smallFunctions: "/small-function-catering-chennai/",
@@ -46,6 +47,8 @@ export const ROUTES = {
   familyDining: "/family-dining-anna-nagar/",
   faq: "/faq/",
   noOnionNoGarlic: "/no-onion-no-garlic-anna-nagar/",
+  offers: "/offers/",
+  photos: "/photos/",
 };
 
 // Use the last significant content revision of each published page. A new
@@ -98,6 +101,21 @@ export function pageContentUpdated(path) {
     ROUTES.parotta, ROUTES.whatsNew, ROUTES.nellaiGuide, ROUTES.plannerPartner,
     ROUTES.lunch, ROUTES.dinner, ROUTES.familyDining, ROUTES.cateringQuote, ROUTES.smallFunctions,
   ];
+  // SEO sprint phases 2-4 (24 Nov 2026): titles, descriptions, answers, tables or new pages.
+  // Pages that only got the shared footer and mobile-bar changes keep their earlier date.
+  const sprint = [
+    ROUTES.home, ROUTES.menu, ROUTES.about, ROUTES.dosa, ROUTES.lunch, ROUTES.dinner, ROUTES.book,
+    ROUTES.eventCatering, ROUTES.corporateCatering, ROUTES.smallFunctions, ROUTES.nellaiGuide,
+    ROUTES.offers, ROUTES.photos, ROUTES.karaikudiNellaiGuide,
+  ];
+  // Client keyword alignment pass (25 Nov 2026): answers, Tamil summary, dietary gating, copy fixes.
+  const alignment = [
+    ROUTES.home, ROUTES.about, ROUTES.faq, ROUTES.menu, ROUTES.dosa, ROUTES.smallFunctions, ROUTES.cateringQuote,
+    ROUTES.familyDining, ROUTES.dinner, ROUTES.book, ROUTES.plannerPartner, ROUTES.seasonal, ROUTES.parotta,
+    ROUTES.photos, ROUTES.karaikudiNellaiGuide,
+  ];
+  if (alignment.includes(canonicalPath)) return "2026-11-25";
+  if (sprint.includes(canonicalPath)) return "2026-11-24";
   if (revised.includes(canonicalPath)) return "2026-11-23";
   if (aeoRevisedPages.has(canonicalPath)) return SEO_AEO_GEO_REVISION;
   return revisedPages.has(canonicalPath) && KEYWORD_CONTENT_REVISION > CONTENT_UPDATED

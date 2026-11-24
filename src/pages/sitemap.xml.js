@@ -21,10 +21,13 @@ export function GET() {
     { path: ROUTES.familyDining, priority: "0.8" },
     { path: ROUTES.about, priority: "0.8" },
     { path: ROUTES.book, priority: "0.8" },
+    { path: ROUTES.offers, priority: "0.7" },
+    { path: ROUTES.photos, priority: "0.6" },
     { path: ROUTES.faq, priority: "0.7" },
     { path: ROUTES.whatsNew, priority: "0.7" },
     { path: ROUTES.seasonal, priority: "0.7" },
     { path: ROUTES.nellaiGuide, priority: "0.6" },
+    { path: ROUTES.karaikudiNellaiGuide, priority: "0.6" },
     ...(catering
       ? [
           { path: ROUTES.eventCatering, priority: "0.9" },

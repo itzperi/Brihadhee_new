@@ -157,7 +157,9 @@ export function webSiteSchema() {
     "@id": ids.website,
     url: `${site.url}/`,
     name: getFact("name"),
-    inLanguage: site.locale.replace("_", "-"),
+    // Same visible spellings as the Restaurant node; Tamil Q&A appears on the dosa and Nellai pages.
+    alternateName: [...NAME_SPELLINGS, getFact("nameTamil")],
+    inLanguage: [site.locale.replace("_", "-"), "ta-IN"],
     publisher: { "@id": ids.organization },
   };
 }

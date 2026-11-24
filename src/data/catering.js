@@ -284,8 +284,8 @@ export const plannerFaqs = qaRoute(PLANNER_PATH, plannerFaq);
 
 /* ---- Page metadata ----------------------------------------------------- */
 export const meta = {
-  title: `${titleDiet} Wedding & Event Caterers in Chennai | Brihadhee`,
-  description: `${CDcap} wedding and event caterers in Chennai, based in Anna Nagar East: regional South Indian menus, live counters and per-plate quotes.`,
+  title: `Pure Veg Event Catering Chennai (50–1,500) | Brihadhee`,
+  description: `End-to-end pure veg event catering in Chennai for weddings & housewarmings (50–1,500 guests). Live Dosa & Paanai Parotta counters. Call +91 94442 24999.`,
   h1: `${CDtitle} Event and Wedding Catering in Chennai`,
 };
 
@@ -380,8 +380,8 @@ const hasService = (re) => corpServices.some((x) => re.test(x));
 export const corporateEnabled = Boolean(cateringEnabled && corporate);
 
 export const corporateMeta = {
-  title: `${titleDiet} Corporate Catering in Chennai | Brihadhee`,
-  description: `${CDcap} office lunch catering, bulk meals and recurring employee meal programmes in Chennai. Share your office location and headcount for a quote.`,
+  title: `Pure Veg Corporate Catering Chennai | 1,000+/Day | Brihadhee`,
+  description: `FSSAI-licensed pure veg office lunch & event catering across OMR, Guindy, Ambattur & Anna Nagar. Trusted by Nestlé, Prodapt & HungerBox. Book a tasting.`,
   h1: `${CDtitle} Corporate Catering and Office Lunches in Chennai`,
 };
 

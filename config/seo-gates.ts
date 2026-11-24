@@ -33,15 +33,21 @@ export const EMIT_FAQPAGE = true;
 export const IS_CATERING_PURE_VEG = true;
 
 /**
- * The owner request of 23 November 2026 approves a public dietary guidance page.
- * Exact dish recipes and preparation arrangements remain owner TODOs.
+ * The owner request of 23 November 2026 approved a public dietary guidance page, but the
+ * client keyword rules of 24 November 2026 hold every no-onion, no-garlic, Jain and satvik
+ * mention off live routes until the kitchen confirms Q11-Q14 (dish list, sambar/chutney/podi
+ * ingredients, shared tawa, fermented batter). Off: no page, nav link, sitemap or llms entry,
+ * and the page renders only as a noindex draft in `astro dev` / SEO_GATES_PREVIEW=1. The
+ * tiered draft for after confirmation is drafts/no-onion-no-garlic-anna-nagar.md.
  */
-export const ENABLE_NO_ONION_NO_GARLIC_CLUSTER = true;
+export const ENABLE_NO_ONION_NO_GARLIC_CLUSTER = false;
 // TODO(owner) Supply confirmed recipes and preparation details before naming eligible dishes.
 export const NO_ONION_NO_GARLIC_DISHES: readonly string[] = [];
 export const NO_ONION_NO_GARLIC_AVAILABILITY: "on request" | "always available" | null = "on request";
-/** Audience guidance only, with ingredient and preparation confirmation for each order. */
-export const ENABLE_JAIN_FRIENDLY_CLAIMS = true;
+/** Audience guidance only, with ingredient and preparation confirmation for each order.
+ *  Off with the cluster until the kitchen confirms Q13-Q14 (client rules, 24 Nov 2026).
+ *  Even when on, the site never says "pure Jain", "100% Jain" or "strictly Jain". */
+export const ENABLE_JAIN_FRIENDLY_CLAIMS = false;
 
 /** Q17: Hindi (Hinglish and Devanagari) copy on the website. Tamil is already approved. */
 export const ENABLE_HINDI_COPY = false;

@@ -40,18 +40,18 @@ const SITE = {
   postal: FACTS.address.value.postalCode,
 };
 
-// Key.md is gitignored, so it only exists locally.
-const keyPath = join(ROOT, "Key.md");
+// Keys.md is the tracked keyword source. Retain the legacy local brief fallback.
+const keyPath = existsSync(join(ROOT, "Keys.md")) ? join(ROOT, "Keys.md") : join(ROOT, "Key.md");
 let KEY = null;
 if (existsSync(keyPath)) {
   const k = readFileSync(keyPath, "utf8");
   KEY = {
-    entity: k.match(/^- Entity: (.+)$/m)?.[1]?.trim(),
-    location: k.match(/^- Location: (.+)$/m)?.[1]?.trim(),
-    cuisine: k.match(/^- Cuisine: (.+)$/m)?.[1]?.trim(),
+    entity: (k.match(/^\| Entity \| ([^|]+) \|$/m)?.[1] ?? k.match(/^- Entity: (.+)$/m)?.[1])?.trim(),
+    location: (k.match(/^\| Location \| ([^|]+) \|$/m)?.[1] ?? k.match(/^- Location: (.+)$/m)?.[1])?.trim(),
+    cuisine: (k.match(/^\| Cuisine \| ([^|]+) \|$/m)?.[1] ?? k.match(/^- Cuisine: (.+)$/m)?.[1])?.trim(),
   };
 } else {
-  warnings.push("Key.md not found (gitignored): skipped Key.md comparison.");
+  warnings.push("Keys.md and the legacy Key.md brief are absent. Skipped keyword identity comparison.");
 }
 
 // Catering pages (Pillar 2). The flagship page's FAQ must come from this list,

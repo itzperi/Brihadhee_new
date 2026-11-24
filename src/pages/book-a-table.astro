@@ -37,8 +37,8 @@ const unlinked = partners.filter((p) => !linked.has(p));
 const partnerList = `${partners.slice(0, -1).join(", ")} or ${partners.at(-1)}`;
 
 const path = "/book-a-table/";
-const title = `Reserve a Restaurant Table in Anna Nagar East | ${name}`;
-const description = `Book lunch or dinner at ${name} in Anna Nagar East. Choose your seats online or book with ${partnerList}. Call for groups.`;
+const title = `Book a Table at ${name} | Up to 40% Off Anna Nagar East`;
+const description = `Reserve a pure veg table at ${name}, Anna Nagar East. Get 10% off walk-in or up to 40% off Mon–Thu via Swiggy Dineout, EazyDiner & District.`;
 const updated = pageContentUpdated(path);
 const schema = pageGraph({
   path,
@@ -55,7 +55,7 @@ const schema = pageGraph({
     <PageHeader
       eyebrow="Reservations · Anna Nagar East"
       h1={`Book a table at ${name}, Anna Nagar East`}
-      intro={`Reserve a table for ${getFact("mealTimes")} at ${name} by choosing your seats on this website. You can also book through ${partnerList}. For group seating, call ${phone}.`}
+      intro={`Reserve a table for ${getFact("mealTimes")} at ${name}, the restaurant on ${getFact("street")}, by choosing your seats on this website. You can also book through ${partnerList}. For group seating, call ${phone}.`}
       menuHref={href(ROUTES.menu)}
       primaryAction={{ label: "Reserve a table", href: href(ROUTES.reserve), event: "reserve_table_view_click" }}
     />
@@ -85,7 +85,7 @@ const schema = pageGraph({
         )}
         <p class="section__lead">
           Dining offers include {preBook.description} and {walkInPct} off for walk-in dine-in.
-          Check the offer shown for your slot in the booking app.
+          Check the offer shown for your slot in the booking app, or <a href={href(ROUTES.offers)}>compare all {name} offers</a>.
         </p>
       </div>
     </section>

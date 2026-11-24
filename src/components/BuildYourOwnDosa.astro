@@ -20,6 +20,7 @@ const {
   suggestionsTitle = "Chef's suggestions",
   tint = false,
   facts = [], // [[label, value]] short fact table after the lead (plain text), as in ContentSection
+  table = null, // { caption, head: [..], rows: [[..]] } plain-text data table after the facts
   checked = "", // "YYYY-MM-DD": the facts' verification date, shown as "Last checked"
 } = Astro.props;
 const H = `h${headingLevel}`;
@@ -46,6 +47,13 @@ const SuggestionHeading = show === "suggestions" ? H : Sub;
           </div>
         ))}
       </dl>
+    )}
+    {table && (
+      <table class="menu-page__table">
+        <caption class="visually-hidden">{table.caption}</caption>
+        <thead><tr>{table.head.map((h) => <th scope="col">{h}</th>)}</tr></thead>
+        <tbody>{table.rows.map(([first, ...rest]) => <tr><th scope="row">{first}</th>{rest.map((v) => <td>{v}</td>)}</tr>)}</tbody>
+      </table>
     )}
     {checked && <p class="field__hint content__checked">Last checked: <time datetime={checked}>{longDate(checked)}</time></p>}
 

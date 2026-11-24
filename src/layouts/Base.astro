@@ -3,6 +3,7 @@ import { site, ogImageUrl } from "../data/site.js";
 import { homeSchema, serializeJsonLd } from "../lib/schema.js";
 import "../styles/global.css";
 import CallBar from "../components/CallBar.astro";
+import { DINING_PHONE, cateringPhone } from "../data/contact-numbers.js";
 import frauncesUrl from "../assets/fonts/fraunces-latin.woff2?url";
 import instrumentUrl from "../assets/fonts/instrument-sans-latin.woff2?url";
 
@@ -27,6 +28,11 @@ const metaPixelId = (import.meta.env.PUBLIC_META_PIXEL_ID ?? "").trim();
 const hasMetaPixel = /^\d{10,20}$/.test(metaPixelId);
 
 const canonical = `${site.url}${path}`;
+// Digits of the numbers on this page, so analytics can name a call by the number dialled (src/scripts/main.js).
+// The catering number goes out only on catering pages ([slug].astro sets Astro.locals.contact), where it is
+// already shown: the owner rule keeps it off every other page, raw HTML included.
+const telDigits = (p) => (p ?? "").replace(/\D/g, "");
+const telCatering = Astro.locals.contact ? telDigits(cateringPhone()) : undefined;
 
 // One JSON-LD @graph per page: a single @context, nodes linked by stable @ids.
 const nodes = schema ?? homeSchema({ title, description });
@@ -146,7 +152,7 @@ const base = import.meta.env.BASE_URL.endsWith("/")
       set:html={serializeJsonLd(graph)}
     />
   </head>
-  <body>
+  <body data-tel-dine={telDigits(DINING_PHONE)} data-tel-catering={telCatering}>
     <a class="skip-link" href="#main">Skip to content</a>
     <slot />
     {cta !== "none" && <CallBar mode={cta} quoteAction={quoteAction} />}

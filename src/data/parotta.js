@@ -33,7 +33,7 @@ export const parottaPage = {
     qa("Does Brihadhee serve parotta?",
       `Yes. Brihadhee lists ${parottaDishes.count} vegetarian parotta dishes, priced ${priceRange(parottaDishes)} before GST. These include ${paanai.name}, ${kothu.name}, salna parotta and the Madras Bhel Parotta starter. Ask the restaurant about availability when you visit.`),
     qa("Where can I get Paanai Parotta in Chennai?",
-      `Brihadhee in Anna Nagar East, Chennai, lists ${paanai.name} (claypot parotta) for ${rupees(paanai.price)} before GST. The restaurant is near ${getFact("landmarks")[0]}.`),
+      `Brihadhee in Anna Nagar East, Chennai, lists ${paanai.name} (pot parotta, slow-cooked dum style in a sealed pot) for ${rupees(paanai.price)} before GST. The restaurant is near ${getFact("landmarks")[0]}.`),
     qa("What is Paanai Parotta at Brihadhee?",
       `At Brihadhee, ${paanai.name} is ${lower(paanai.description)} It costs ${rupees(paanai.price)} before GST. For salna served alongside parotta, choose ${salna.name} or ${madurai.name}.`),
     qa("Where can I get veg kothu parotta in Anna Nagar?",

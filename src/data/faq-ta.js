@@ -205,3 +205,16 @@ export const taCorporate = corporate
       ),
     ]
   : [];
+
+/* ---- Tamil summary block (/about/ and /faq/) -------------------------------
+ * Client keyword rules, 24 Nov 2026 (priority 5): a short localized summary whose
+ * labels are the Tamil searches people use. Facts and prices as in the Q&As above;
+ * two diet words at most, and no Hindi (Q17). Rendered by TamilSummary.astro. */
+export const taSummary = [
+  ["அண்ணா நகர் சைவ உணவகம்", `${BR} அண்ணா நகர் கிழக்கில், அண்ணா நகர் டவர் பூங்கா அருகே உள்ள ${PV} தென்னிந்திய உணவகம். தினமும் ${OPEN} முதல் ${CLOSE} வரை மதிய உணவும் இரவு உணவும் மட்டும்.`],
+  ["அண்ணா நகர் தோசை", `உங்கள் விருப்பப்படி மாவு, பொடி, பூரணம், சுடும் முறையைத் தேர்வு செய்து தோசை ஆர்டர் செய்யலாம். மாவு ${rs(batterR.min)} முதல் ${rs(batterR.max)} வரை.`],
+  ["அண்ணா நகர் மதிய உணவு", `${OPEN} முதல் தமிழ்நாடு மீல்ஸ் ${rs(tnMeals.min)} முதல் ${rs(tnMeals.max)} வரை கிடைக்கும்.`],
+  ["நெல்லை மீல்ஸ் சென்னை", `நெல்லை ஸ்பெஷல் சொதி மீல்ஸ் ${rs(sodhi.price)}, வாழை இலையில் பரிமாறப்படுகிறது.`],
+  ["பானை பரோட்டா சென்னை", `பானை பரோட்டா ${rs(paanai.price)}, ஸ்பெஷல் கொத்து பரோட்டா ${rs(kothu.price)}. ${gstNote}`],
+  ["பிரிஹாதீ அண்ணா நகர்", `பிரிஹாதீ என்றும் தேடுவார்கள்; சரியான பெயர் ${BR}. தொலைபேசி ${getFact("phone")}.`],
+];

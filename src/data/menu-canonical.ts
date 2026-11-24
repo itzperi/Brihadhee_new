@@ -11,6 +11,7 @@
  *   - the chef's-hat icon marks a chef's special (tag "Chef's special")
  *   - the menu spells "Pannai Parotta" and "Phulkha"; the site uses "Paanai" and
  *     "Phulka", and expands "Spl" to "Special"
+ * TODO(owner) Supply approved descriptions for dishes whose description is empty.
  * Descriptions: kept from the previous menu where the dish is unchanged; new dishes
  * have an empty description until the owner supplies one (none are invented).
  */

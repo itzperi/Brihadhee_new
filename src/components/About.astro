@@ -8,6 +8,7 @@ import Icon from "./Icon.astro";
 import { getFact, factOr, openingTimes, RESTAURANT_DIET } from "../data/entity-truth.ts";
 import { byo, rupees } from "../lib/menu-facts.js";
 import { cateringEnabled, corporate, guests } from "../data/catering.js";
+import { ENABLE_NO_ONION_NO_GARLIC_CLUSTER, ENABLE_JAIN_FRIENDLY_CLAIMS } from "../../config/seo-gates.ts";
 
 const { media } = site;
 const { range } = openingTimes();
@@ -58,7 +59,9 @@ const reasons = [
       </ul>
 
       <p>{site.longDescription}</p>
-      <p>Brihadhee focuses on quality regional South Indian cooking and dosas prepared to order. For a visit with specific ingredient requirements, see our <a href={href(ROUTES.noOnionNoGarlic)}>no-garlic and Jain dietary request guide</a>.</p>
+      {/* Brand disambiguation (client priority 2): the verified name story, also on /about/ and /faq/. */}
+      <p>{getFact("nameStory")}</p>
+      <p>Brihadhee focuses on quality regional South Indian cooking and dosas prepared to order.{ENABLE_NO_ONION_NO_GARLIC_CLUSTER && <> For a visit with specific ingredient requirements, see our <a href={href(ROUTES.noOnionNoGarlic)}>{ENABLE_JAIN_FRIENDLY_CLAIMS ? "no-garlic and Jain dietary request guide" : "dietary request guide"}</a>.</>}</p>
       {founders && (
         <p>
           {site.name} was founded by {founders.names.join(" and ")}. <a href={`${href(ROUTES.about)}#story`}>Read our story</a>, or see <a href={href(ROUTES.whatsNew)}>what's new at {site.name} this month</a>.

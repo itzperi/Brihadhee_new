@@ -10,6 +10,7 @@
  *   links:   [{ label, href, primary?, external? }]          calls to action
  *   image:   { name, alt, caption }                         photo in public/images
  *   note:    a short line after the dish list
+ *   table:   { caption, head: [..], rows: [[..]] }          a data table after the lead; cells may hold [anchor](/path/)
  *   facts:   [[label, value]]                              a short fact table after the lead
  *   checked: "YYYY-MM-DD"                                 "Last checked" date for those facts (the fact's
  *            verifiedOn in entity-truth.ts or the owner confirmation date, never the build date)
@@ -21,7 +22,7 @@ import { responsive } from "../data/site.js";
 import { linkify } from "../lib/inline-links.js";
 import { longDate } from "../data/entity-truth.ts";
 
-const { id, eyebrow = "", title, lead = "", note = "", dishes = [], items = [], links = [], image = null, tint = false, cards = false, facts = [], checked = "", checkedLabel = "Last checked" } = Astro.props;
+const { id, eyebrow = "", title, lead = "", note = "", dishes = [], items = [], links = [], image = null, tint = false, cards = false, table = null, facts = [], checked = "", checkedLabel = "Last checked" } = Astro.props;
 const ext = (l) => (l.external ? { target: "_blank", rel: "noopener" } : {});
 ---
 
@@ -31,6 +32,18 @@ const ext = (l) => (l.external ? { target: "_blank", rel: "noopener" } : {});
       {eyebrow && <p class="eyebrow">{eyebrow}</p>}
       <h2 class="section__title" id={`${id}-title`}>{title}</h2>
       {lead && <p class="section__lead" set:html={linkify(lead)} />}
+
+      {table && (
+        <table class="menu-page__table">
+          <caption class="visually-hidden">{table.caption}</caption>
+          <thead><tr>{table.head.map((h) => <th scope="col">{h}</th>)}</tr></thead>
+          <tbody>
+            {table.rows.map(([first, ...rest]) => (
+              <tr><th scope="row" set:html={linkify(String(first))} />{rest.map((c) => <td set:html={linkify(String(c))} />)}</tr>
+            ))}
+          </tbody>
+        </table>
+      )}
 
       {facts.length > 0 && (
         <dl class="glance__list content__facts">
