@@ -112,6 +112,7 @@ const EVENT_SCALE = `${num(EVENT_GUESTS.min)}–${num(EVENT_GUESTS.max)} guests`
 
 /** Canonical production origin (owner, 2026-11-06). No trailing slash. */
 export const SITE_ORIGIN = "https://www.brihadhee.com";
+export const ORGANIZATION_ID = `${SITE_ORIGIN}/#organization`;
 export const RESTAURANT_ID = `${SITE_ORIGIN}/#restaurant`;
 export const CATERING_ID = `${SITE_ORIGIN}/#catering`;
 export const RESTAURANT_DIET = "100% pure vegetarian";
@@ -243,7 +244,7 @@ export const FACTS = {
   dineIn: verified(true),
   familyFriendly: verified(true, "owner brief; Google profile notes (Ho.md)"),
   alcohol: verified("not served", "owner brief; reservation listing (Ho.md)"),
-  acceptsReservations: verified({ value: true, how: "pre-booking through Swiggy Dineout, EazyDiner and District" }),
+  acceptsReservations: verified({ value: true, how: "reserve directly on the Brihadhee website or book through Swiggy Dineout, EazyDiner or District" }),
   /** Owner-confirmed booking pages for this restaurant. */
   bookingLinks: verified(
     [
@@ -368,9 +369,10 @@ export const FACTS = {
     D12
   ),
   /* ---- Seasonal (Karthigai / Ayyappa mala): pending until the client confirms --- */
-  noOnionGarlic: unverified<boolean>(
-    "whether the kitchen cooks without onion and garlic on request (for Ayyappa mala devotees), at the restaurant and for catering",
-    [/\b(?:no[- ]onion[,\s-]*(?:no[- ])?garlic|without onion(?: and| or|,)? garlic|onion[- ]and[- ]garlic[- ]free|jain food)\b/i]
+  noOnionGarlic: verified(
+    true,
+    "Owner request of 23 November 2026 supports no-garlic requests and no-onion options where available. Exact dishes and preparation details remain TODOs in config/seo-gates.ts.",
+    "2026-11-23"
   ),
   poojaCatering: unverified<boolean>(
     "whether Brihadhee caters Ayyappa poojas, bhajans and devotee groups (add \"pooja\" to confirmed_events)",
@@ -412,7 +414,7 @@ export const RETIRED_TERMS: { re: RegExp; why: string }[] = [
   { re: /\bbreakfasts?\b|காலை\s*உணவு/i, why: "breakfast service is retired" },
   { re: /\btiffins?\b|டிபன்/i, why: "tiffin and Mini Tiffin positioning is retired" },
   { re: /\b500[\s-]*\+?[\s-]*(?:dosa[\s-]+)?(?:varieties|types|kinds)\b/i, why: "'500 varieties' is not a client claim" },
-  { re: /\b(?:cheap(?:er|est|ly)?|budget|pocket[\s-]*friendly|wallet[\s-]*friendly)\b/i, why: "price-led positioning is ruled out" },
+  { re: /\b(?:cheap(?:er|est|ly)?|affordable|budget|pocket[\s-]*friendly|wallet[\s-]*friendly)\b/i, why: "price-led positioning is ruled out" },
   { re: /\bunder[\s-]*(?:₹|rs\.?|inr)[\s-]*(?:100|150|300)\b/i, why: "price-led positioning is ruled out" },
   { re: /\bvalue[\s-]+combos?\b/i, why: "price-led positioning is ruled out" },
   { re: /\b0?6[:.]30\s*a\.?m\b|\b06[:.]30\b/i, why: "the 6:30 AM opening is retired (open 11 AM to 11 PM)" },

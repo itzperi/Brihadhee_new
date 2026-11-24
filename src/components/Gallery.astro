@@ -79,5 +79,5 @@ const { gallery, video } = site.media;
       </button>
     </div>
   </div>
-  <img id="lightbox-image" src="" alt="Enlarged photo from the Brihadhee gallery" width="1200" height="900" />
+  <img id="lightbox-image" src={gallery[0]?.src} alt="Enlarged photo from the Brihadhee gallery" width="1200" height="900" loading="lazy" decoding="async" />
 </dialog>

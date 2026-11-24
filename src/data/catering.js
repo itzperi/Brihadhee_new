@@ -291,7 +291,7 @@ export const meta = {
 
 export const plannerMeta = {
   title: "Catering Partner for Event Planners in Chennai | Brihadhee",
-  description: `Plan ${CD} menus and white-label or co-branded live counters for Chennai events with Brihadhee. Send your agency's event brief.`,
+  description: `Plan ${CD} menus and white-label or co-branded live counters for Chennai events with Brihadhee. Share your agency's brief for a quote.`,
   h1: "Catering Partner for Event Planners in Chennai",
 };
 
@@ -447,7 +447,7 @@ export const corporatePage = corporateEnabled
       services: {
         id: "services",
         title: "Corporate Catering Services",
-        lead: `Choose recurring office lunches, a packed bulk meal order or a staffed office event. Brihadhee offers ${CD} menus for each service.`,
+        lead: `Brihadhee offers ${CD} catering for Chennai offices, including recurring staff lunches, packed bulk meal orders and office events. Tell the team whether you need meals on a recurring schedule or for one date. Share the headcount, office location and setup to discuss the right service.`,
         tint: true,
         items: [
           hasService(/daily office lunch/) && {
@@ -471,7 +471,7 @@ export const corporatePage = corporateEnabled
       menus: {
         id: "menus",
         title: `Sample ${CDtitle} Corporate Menus`,
-        lead: "These sample menus are built from dishes Brihadhee already serves at its restaurant; your final menu, portions and per-plate price are agreed with your team before the trial week.",
+        lead: "Brihadhee’s sample office menus draw from the dishes served at its restaurant, including South Indian lunch and Nellai Special Sodhi Meals. Review the examples with your team, then discuss menu rotation, portion sizes and the per-plate price with Brihadhee before the trial week.",
         items: [
           {
             title: "Standard South Indian Office Lunch",

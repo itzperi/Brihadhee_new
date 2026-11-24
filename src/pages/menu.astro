@@ -38,7 +38,7 @@ const extras = UNPRICED_SIGNATURES;
 const dosa = category("dosa");
 
 const { range } = openingTimes();
-const title = `${name} Menu and Prices | Pure Veg, Anna Nagar East`;
+const title = `Pure Veg Menu and Prices in Anna Nagar East | ${name}`;
 const description = `${name} menu with prices: build your own dosa, ${dosa.count} classic dosas, Nellai meals, parotta and filter coffee. Lunch and dinner, ${range} daily.`;
 const schema = pageGraph({
   path: "/menu/",
@@ -62,6 +62,7 @@ const schema = pageGraph({
           This page lists all {itemCount} dishes on the current menu{allVegetarian ? ", every one of them vegetarian" : ""}.
         </p>
         <p class="menu-page__note">Prices in {currencySymbol === "₹" ? "Indian rupees (₹)" : currencySymbol}, as on the current menu. {menuNotes.gst} {menuNotes.parcel} {menuNotes.prep}</p>
+        <p>For no-garlic requests, discuss your chosen dish and accompaniments with the team before ordering. No-onion options depend on availability. Read our <a href={href(ROUTES.noOnionNoGarlic)}>ingredient and preparation guidance for dietary requests</a>.</p>
         <p class="section__lead">
           See <a href={href(ROUTES.dosa)}>how to order a customized dosa</a>,
           <a href={href(ROUTES.lunch)}>Nellai meals and lunch combos</a>, or

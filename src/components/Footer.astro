@@ -42,6 +42,8 @@ const isCateringPage = Boolean(Astro.locals.contact);
             width="594"
             height="420"
             alt={site.name}
+            loading="lazy"
+            decoding="async"
           />
         </a>
         <p>{site.shortDescription}</p>

@@ -218,7 +218,7 @@ function buildSmallFunctions() {
       ...(hasRegionalMenu ? [{
         id: "menu-for-50-guests",
         title: `What Goes on a ${CDtitle} Catering Menu for ${MIN} Guests?`,
-        lead: `Start with a South Indian meal for your private function and tell ${name} which dishes or live counters you want. Use these menu ideas to brief the catering team, then confirm the dishes and service in your quote.`,
+        lead: `For a private function in Chennai, start with a South Indian meal and ask ${name} which regional dishes and live counters suit your event. Share the meal time, guest count and venue setup. Confirm the final dishes and the service you need in the catering quote.`,
         items: [
           {
             title: "Tirunelveli-style lunch",
@@ -245,7 +245,7 @@ function buildSmallFunctions() {
       {
         id: "catering-price",
         title: "How the Per-Plate Quote Works",
-        lead: `${name} quotes each function separately. The headcount, meal, dishes, live counters and serving requirements shape the quote. Share your planned spend if you have one.`,
+        lead: `${name} prepares a per-plate quote for each small function in Chennai based on headcount, dishes, live counters and how meals will be served. Share your intended spend per guest and ask which parts of the service the quote covers, including setup or service at the venue.`,
         links: [{ label: "See what to include in a catering quote", href: `${href(ROUTES.cateringQuote)}#what-to-send` }],
       },
       {
@@ -362,7 +362,7 @@ function buildQuote() {
       {
         id: "what-to-send",
         title: whatToSend,
-        lead: `Tell Brihadhee what you are planning, where and when it will take place, and how many guests you expect. Add any preferences that will help the team put together a quote.`,
+        lead: `To request a Brihadhee catering quote, share the occasion, Chennai venue area, estimated guest count and date if known. Include your preferred meal, any dishes or live counters you have in mind, and the service you need at the venue. The team uses these details to discuss availability and price.`,
         items: [
           { title: "Event, date and venue", text: "Give the occasion, date or approximate timing and venue area in Chennai. Add your meal time if you know it." },
           { title: "Headcount and meal", text: `An estimated guest count from ${MIN} is enough to start. Indicate lunch or dinner and note any must-have dishes or dietary requirements for discussion.` },
@@ -373,7 +373,7 @@ function buildQuote() {
         id: "price-factors",
         title: "What Shapes Your Per-Plate Quote",
         checked: CATERING_CHECKED,
-        lead: "The guest count, menu, live counters and service requirements all affect the quote. Share your planned spend per guest if you have one so the team can discuss suitable options.",
+        lead: "Brihadhee bases a Chennai catering quote on the guest count, menu, live counters and service at the venue. If you have a planned spend per guest, share it with the team. Ask which items and services the per-plate quote covers before you book.",
         items: [
           {
             title: "Menu and counters",
@@ -478,7 +478,7 @@ function buildFamily() {
       {
         id: "celebrations",
         title: "Birthday and Anniversary Dinners",
-        lead: `For a birthday or anniversary dinner at ${name}, choose a date and time through one of the booking partners. For a large group, call ahead so the restaurant can check seating for your party.`,
+        lead: `For a birthday or anniversary dinner at ${name} in Anna Nagar East, book a date and time directly on the restaurant website or through a booking partner. For a large family group, call ahead with your party size so the team can check seating for everyone.`,
         tint: true,
         items: smallFunctionsPage ? [
           {
@@ -491,7 +491,7 @@ function buildFamily() {
       {
         id: "family-favourites",
         title: `What Families Order at ${name}`,
-        lead: `At ${name}, everyone at the table can build their own dosa from ${byo.batterCount} batters (${batterRange}), and the table can share Nellai meals, ${paanai.name} and ${poppers.name}.`,
+        lead: `Families at ${name} can order Nellai meals at lunch or choose ${paanai.name} and ${poppers.name} at dinner. Anyone who wants to customise a dosa can start with one of ${byo.batterCount} batters (${batterRange}) and choose toppings, filling and roast. Check the menu for the listed prices before GST.`,
         dishes: [paanai, poppers, filterCoffee].map(dish),
         links: [
           { label: "Build your own dosa", href: href(ROUTES.dosa) },
@@ -537,12 +537,12 @@ export const familyPage = buildFamily();
  * ======================================================================= */
 function buildFaqHub() {
   const path = ROUTES.faq;
-  const title = `${name} FAQ: Timings, Dosa, Catering | Anna Nagar`;
+  const title = `FAQ on Timings, Dosa, Catering and Booking | ${name}`;
   const description = `Answers about ${name}, the pure veg South Indian restaurant in Anna Nagar East: lunch and dinner only, ${OPEN} to ${CLOSE}, dosa, catering and bookings.`;
   const faq = qaRoute(path, [
     /* The single permitted mention of the retired service: the exact question in
        config/seo-gates.ts, answered without repeating the word. */
-    qa(GATES.NEGATIVE_FAQ_QUESTION, `No. ${name} serves lunch and dinner only, from ${HOURS} every day. Lunch starts at ${OPEN} and dinner is served until ${CLOSE}, so plan a late-morning visit. For a table, see the booking options or call ${phone}.`, { id: GATES.NEGATIVE_FAQ_ID }),
+    qa(GATES.NEGATIVE_FAQ_QUESTION, `${name} serves lunch and dinner only, from ${HOURS} every day. Lunch starts at ${OPEN} and dinner is served until ${CLOSE}, so plan a late-morning visit. For a table, see the booking options or call ${phone}.`, { id: GATES.NEGATIVE_FAQ_ID }),
     qa(
       `Does ${name} serve non-veg food?`,
       `No. ${name}'s restaurant is ${PV}: no meat, egg or fish is cooked in its kitchen, and alcohol is not served. ` +
@@ -646,122 +646,109 @@ export const faqHubPage = buildFaqHub();
  * (gate off) every unconfirmed part is shown with a draft marker.         *
  * ======================================================================= */
 export const noOnionLive = GATES.ENABLE_NO_ONION_NO_GARLIC_CLUSTER;
-const nogDishes = [...GATES.NO_ONION_NO_GARLIC_DISHES];
-if (noOnionLive && (!nogDishes.length || !GATES.NO_ONION_NO_GARLIC_AVAILABILITY)) {
-  throw new Error(
-    "[spokes] ENABLE_NO_ONION_NO_GARLIC_CLUSTER is on, but NO_ONION_NO_GARLIC_DISHES or NO_ONION_NO_GARLIC_AVAILABILITY is empty (Q12, config/seo-gates.ts)"
-  );
-}
-if (GATES.ENABLE_JAIN_FRIENDLY_CLAIMS && !noOnionLive) {
-  throw new Error("[spokes] ENABLE_JAIN_FRIENDLY_CLAIMS needs ENABLE_NO_ONION_NO_GARLIC_CLUSTER (config/seo-gates.ts)");
-}
 
 function buildNoOnion() {
   const path = ROUTES.noOnionNoGarlic;
-  const draft = !noOnionLive;
-  const showJain = GATES.ENABLE_JAIN_FRIENDLY_CLAIMS || draft;
-  const showHindi = GATES.ENABLE_HINDI_COPY || draft;
-  const avail = GATES.NO_ONION_NO_GARLIC_AVAILABILITY ?? "on request";
-  const dishText = nogDishes.length ? list(nogDishes) : "the dishes the kitchen confirms";
-  const dishShort = nogDishes.length ? list(nogDishes.slice(0, 2)) : "selected dishes";
-  const hasOnionGarlic = (i) => /onion|garlic/i.test(`${i.name} ${i.description ?? ""}`);
-  const onionGarlicDishes = allItems.filter(hasOnionGarlic).map((i) => i.name);
-  const onionGarlicToppings = byo.steps.flatMap((st) => st.options).filter((o) => /onion|garlic/i.test(o.name)).map((o) => o.name);
-  const title = `No Onion No Garlic Food in Anna Nagar | ${name}`;
-  const description = `South Indian food without onion and garlic at ${name}, Anna Nagar East: ${dishShort} ${avail}, and build your own dosa your way. Open ${OPEN} to ${CLOSE}.`;
-  const tiersQ = claimQuestion(path, "What Is the Difference Between Jain, Satvik and No Onion No Garlic Food?");
+  const title = "No-Garlic South Indian Food in Anna Nagar | Brihadhee";
+  const description = "Plan no-garlic South Indian food at Brihadhee, Anna Nagar East, Chennai. Discuss no-onion and Jain dietary requests before lunch, dinner or catering.";
   const faq = qaRoute(path, [
     qa(
-      `Does ${name} serve food without onion and garlic?`,
-      `Yes, ${name}, the vegetarian restaurant in ${NEAR}, can prepare ${dishShort} without onion and garlic ${avail}. Tell the team when you order.`
+      "Where can I discuss no-garlic food in Anna Nagar?",
+      "Brihadhee supports no-garlic food requests at its South Indian vegetarian restaurant in Anna Nagar East, Chennai. Tell the team what you avoid before choosing a dish. Ask about the batter, podi, filling, cooking fat and accompaniments, and confirm availability for your visit before placing the order."
     ),
     qa(
-      `Can I get a no onion no garlic dosa at ${name}?`,
-      `Yes. At ${name} you can build your own dosa without onion and garlic: choose one of ${byo.batterCount} batters and skip the ${list(onionGarlicToppings)}. ` +
-        `Ask the team which podis suit you; dosas are served from ${HOURS}.`
+      "Are no-onion dishes available at Brihadhee?",
+      "Brihadhee can discuss no-onion choices where available, alongside your no-garlic request. Availability depends on the dish and its preparation. Before ordering, ask the team to check the base recipe, premade ingredients and sides. A request to omit an onion topping should also cover the rest of the plate."
     ),
-    showJain &&
-      qa(
-        `Is ${name} Jain friendly?`,
-        `${name} offers no onion, no garlic options ${avail}, and guests who also avoid root vegetables can tell the team when they order. ` +
-          `It does not call its kitchen Jain, so ask about each dish; it is open from ${HOURS}.`
-      ),
+    qa(
+      "How should Jain guests order at Brihadhee?",
+      "Brihadhee welcomes Jain dietary enquiries for lunch, dinner and catering. Describe your requirements, including any root vegetables, fermented ingredients or preparation contact you avoid. Ask the team to check the complete dish and accompaniments. Confirm what can be prepared for your order before finalising your selection.",
+      { kind: "explain" }
+    ),
+    qa(
+      "Can a custom dosa suit my dietary requirements?",
+      "Brihadhee's custom dosa lets you choose batter, toppings, filling and roast, giving the team a clear starting point for discussing dietary requests. Ask which ingredients and sides suit your needs before ordering. Omitting a named topping still requires checking the ingredients in the batter, podi and chutneys.",
+      { kind: "explain" }
+    ),
+    qa(
+      "How do I arrange a no-garlic catering menu in Chennai?",
+      "Brihadhee's catering team can discuss a no-garlic menu for offices or private functions in Chennai. Include the date, venue, headcount and dietary requirements in your enquiry. Ask for the agreed dishes, preparation arrangements and serving plan in the quote so the organiser and kitchen work from the same information.",
+      { kind: "explain" }
+    ),
+    qa(
+      "When should I call about dietary requirements?",
+      "Call Brihadhee before your lunch or dinner visit to discuss dietary requirements and confirm the dishes available. The restaurant opens every day from " + HOURS + ". For a family group, mention how many guests share the requirements so the team can discuss ordering and service before you arrive."
+    ),
   ]);
   return {
-    path,
-    draft,
-    noindex: draft,
-    draftNote: draft
-      ? "Draft, not published: this page goes live only when the owner answers questions 11 to 14 of the 12 November keyword plan (which dishes, on request or always, shared tawa and podi). The Jain section also needs questions 13 and 14, and the Hindi lines question 17. Turn it on in config/seo-gates.ts."
-      : null,
-    title,
-    description,
-    h1: "No Onion, No Garlic South Indian Food in Anna Nagar",
-    eyebrow: "No onion, no garlic · Anna Nagar East",
-    intro: `${name}, a ${PV} restaurant in ${NEAR}, can prepare ${dishText} without onion and garlic ${avail}, for lunch and dinner from ${HOURS}. Tell the team when you order.`,
+    path, title, description,
+    h1: "No-Garlic South Indian Food in Anna Nagar",
+    eyebrow: "Dietary requests · Anna Nagar East",
+    intro: "Brihadhee is a South Indian vegetarian restaurant in Anna Nagar East, Chennai, serving lunch and dinner from " + HOURS + ". No-garlic requests are supported, with no-onion options discussed where available. Marwari families and Jain guests can describe their dietary needs to the restaurant team before choosing dishes.",
     menuHref: href(ROUTES.menu),
-    glanceTitle: `No onion, no garlic at ${name}: summary`,
+    glanceTitle: "Dietary requests at Brihadhee",
     glance: [
-      ["Who", `${name}, a South Indian vegetarian restaurant in ${NEAR}`],
-      ["Without onion and garlic", `${dishText}, ${avail}`],
-      ["Build your own dosa", `${byo.batterCount} batters; skip the ${list(onionGarlicToppings)}`],
-      ["Hours", `${HOURS} daily · ${GATES.MEAL_FRAMING}`],
+      ["Location", STREET + ", Chennai " + getFact("address").postalCode],
+      ["Hours", HOURS + " daily · " + GATES.MEAL_FRAMING],
+      ["No garlic", "Discuss the complete dish and confirm availability before ordering"],
+      ["No onion", "Ask which options are available for your visit"],
     ],
     sections: [
       {
-        id: "no-onion-no-garlic",
-        title: "Dishes Made Without Onion and Garlic",
-        lead: `${name} can make these dishes without onion and garlic ${avail}: ${dishText}.`,
-        dishes: nogDishes.map((n) => ({ name: n })),
-        note: `These dishes contain onion or garlic as listed on the menu: ${list(onionGarlicDishes)}. Ask the team about any other dish before you order.`,
-      },
-      {
-        id: "build-your-own-dosa-no-onion",
-        title: "Build Your Own Dosa Without Onion and Garlic",
-        lead: `With build your own dosa you choose every part: pick one of ${byo.batterCount} batters (${batterRange}), skip the ${list(onionGarlicToppings)}, and ask the team which podis and fillings are made without garlic.`,
-        tint: true,
-        links: [{ label: "How build your own dosa works", href: href(ROUTES.dosa) }],
-      },
-      {
-        id: "jain-satvik-difference",
-        title: tiersQ,
-        lead: "No onion no garlic food leaves out onion and garlic. Satvik (sattvic) cooking, which in Tamil Nadu often means temple-style food, also leaves them out and keeps the food simple. Jain food goes further: it also leaves out root vegetables such as potato, carrot, radish and beetroot, and many Jains limit fermented batters such as idli and dosa batter.",
+        id: "ordering",
+        title: "How do I order food without garlic?",
+        lead: "Brihadhee supports a no-garlic request by discussing what you want to eat and which ingredients you avoid. Start with the dish you are considering and ask the server to confirm it with the kitchen. The current menu gives you dish names and prices so the conversation can be specific.",
         items: [
-          { title: "No onion, no garlic", text: `${name} offers this ${avail} for ${dishText}.` },
-          { title: "Satvik", text: `At ${name}, satvik means the no onion, no garlic dishes above; tell the team about anything else you avoid.` },
-          ...(showJain
-            ? [
-                {
-                  title: draft && !GATES.ENABLE_JAIN_FRIENDLY_CLAIMS ? "Jain-friendly (draft: waits for questions 13 and 14)" : "Jain-friendly, on request",
-                  text: `Guests who also avoid root vegetables can tell the team when they order. ${name} does not describe its kitchen as Jain, so ask about each dish.`,
-                },
-              ]
-            : []),
+          { title: "Explain the complete request", text: "Say whether you avoid garlic alone or both onion and garlic. Tell the server about root vegetables or other ingredients you also exclude. Your requirements help the kitchen check a suitable order with the ingredients and preparation details that matter to you." },
+          { title: "Check each part of the plate", text: "Ask about the base recipe, spice mixes, podi, filling, roast and accompaniments. Confirm any ingredients prepared ahead of service. A visible garnish is only one part of a dish, so discuss chutneys, sambar and other sides as well." },
+        ],
+        links: [{ label: "Read the current Brihadhee menu", href: href(ROUTES.menu) }],
+      },
+      {
+        id: "custom-dosa",
+        title: "What can I choose in a custom dosa?",
+        lead: "Brihadhee's build-your-own dosa begins with a choice of " + byo.batterCount + " batters, followed by toppings, filling and roast. Choosing individual components makes it easier to explain your preferences to the server. The kitchen cooks the dosa to order and serves it at your table.",
+        items: [
+          { title: "Start with the batter", text: "Ask which batter fits your requirements and whether your preferred ingredients can be used together. If you avoid fermented ingredients, describe that separately so the kitchen can answer the right question." },
+          { title: "Confirm fillings and sides", text: "The menu names onion and garlic among some additions. Ask the server to check your chosen podi, filling and accompaniments together. Confirm the preparation method before choosing the finished combination." },
+        ],
+        links: [{ label: "Explore the custom dosa ingredients and prices", href: href(ROUTES.dosa) }],
+        tint: true,
+      },
+      {
+        id: "jain-requests",
+        title: "What should Jain and Marwari guests discuss?",
+        lead: "Brihadhee welcomes Marwari families and Jain guests who want to discuss South Indian vegetarian food around their own dietary requirements. Guests may have different rules about onion, garlic, root vegetables, fermentation and preparation contact. Describe the ingredients and processes you avoid so the team can check your order individually.",
+        items: [
+          { title: "Ask about preparation", text: "Discuss the tawa, utensils, cooking fat and serving arrangements if contact with other ingredients matters to you. Ask whether the kitchen can meet your requirements on the day. These details need an answer from the restaurant for your particular order." },
+          { title: "Confirm before ordering", text: "Ask the team to repeat the selected dish, changes and sides before it goes to the kitchen. If you have an allergy, state the allergen explicitly when discussing ingredients and preparation. Make sure your server understands each requirement before you finalise the order." },
+        ],
+      },
+      {
+        id: "groups",
+        title: "Can we plan dietary requests for a group or event?",
+        lead: "Brihadhee offers corporate catering and end-to-end event catering in Chennai, including birthdays, weddings and get-togethers. Tell the team how many people need a no-garlic menu and whether onion or other ingredients must also be excluded. Private event enquiries start from " + MIN + " guests.",
+        items: [
+          { title: "For an office programme", text: "Share your office area, meal schedule and the number of dietary portions needed each day. Brihadhee serves " + GATES.CORPORATE_DAILY_SCALE + " across corporate clients. Ask the team to agree on dishes, packing, delivery timing and how portions will be identified within your programme." },
+          { title: "For a family function", text: "Include the occasion, Chennai venue, date and guest count when you enquire. Agree on the complete menu and service scope with the catering team. Ask for dietary portions and serving arrangements to be recorded alongside the quote so everyone has the same plan." },
+        ],
+        links: [
+          { label: "Discuss corporate lunch catering", href: href(ROUTES.corporateCatering) },
+          { label: "Request an event catering quote", href: href(ROUTES.cateringQuote), primary: true },
         ],
       },
     ],
-    languages: {
-      tamil: "வெங்காயம் பூண்டு இல்லாத உணவு அண்ணா நகர் · பூண்டு இல்லாத உணவு அண்ணா நகர் · சாத்வீக உணவு சென்னை",
-      hindi: showHindi ? "बिना प्याज लहसुन का खाना चेन्नई · बिना प्याज लहसुन का रेस्टोरेंट अन्ना नगर · सात्विक भोजन चेन्नई" : null,
-      hinglish: showHindi ? `bina pyaz lahsun ka khana Chennai · satvik bhojan Chennai${showJain ? " · Jain khana Anna Nagar" : ""}` : null,
-      hindiDraft: draft && !GATES.ENABLE_HINDI_COPY,
-    },
-    faqTitle: "No onion, no garlic questions",
+    faqTitle: "Questions about dietary requests",
     faq,
     related: [
-      { label: "Pure veg restaurant in Anna Nagar", href: href("/") },
-      { label: "Build your own dosa", href: href(ROUTES.dosa) },
+      { label: "Brihadhee address and directions", href: href(ROUTES.about) },
       { label: "Family dining in Anna Nagar", href: href(ROUTES.familyDining) },
     ],
-    schema: () =>
-      pageGraph({
-        path,
-        title,
-        description,
-        crumbs: [...HOME_CRUMBS, { name: "No onion, no garlic", path }],
-        extras: [faqPageSchema(path, faq)],
-      }),
+    schema: () => pageGraph({
+      path, title, description,
+      crumbs: [...HOME_CRUMBS, { name: "Dietary requests", path }],
+      extras: [faqPageSchema(path, faq)],
+    }),
   };
 }
-/* Built only when it can be rendered: live gate, or a dev/preview draft. */
-export const noOnionPage = noOnionLive || gatePreview ? buildNoOnion() : null;
+export const noOnionPage = noOnionLive ? buildNoOnion() : null;

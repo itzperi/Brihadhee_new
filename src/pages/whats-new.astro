@@ -37,8 +37,10 @@ const schema = pageGraph({
   <Nav homeBase={href("/")} />
   <main id="main" tabindex="-1">
     <PageHeader eyebrow={`Updated ${longDate(updated)}`} h1={page.h1} intro={page.intro} menuHref={href(ROUTES.menu)} />
-    <p class="container page-head__date">Published <time datetime={page.published}>{longDate(page.published)}</time>{updated > page.published && <> · Updated <time datetime={updated}>{longDate(updated)}</time></>}</p>
-    {page.sections.map((sec) => <ContentSection {...sec} />)}
+    <article>
+      <p class="container page-head__date">By <a href={href(ROUTES.about)}>{site.name}</a> · Published <time datetime={page.published}>{longDate(page.published)}</time>{updated > page.published && <> · Updated <time datetime={updated}>{longDate(updated)}</time></>}</p>
+      {page.sections.map((sec) => <ContentSection {...sec} />)}
+    </article>
     <div class="container">
       <a class="btn btn--ghost" href={preferredSources.href}>
         Find Brihadhee in Google Preferred Sources

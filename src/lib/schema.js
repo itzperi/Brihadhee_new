@@ -3,7 +3,8 @@
  * its own @context, so any combination can be emitted in a single <script>.
  *
  * Graph (stable @ids):
- *   Restaurant (#restaurant)       <- publisher of -> WebSite (#website)
+ *   Organization (#organization)   <- publisher of -> WebSite (#website)
+ *   Restaurant (#restaurant)          parentOrganization -> Organization
  *   WebPage (<page>#webpage)       isPartOf WebSite; mainEntity points at the page's subject
  *                                  when modeled; breadcrumb links to a real trail on inner pages
  *   FAQPage (<page>#faq)           isPartOf its WebPage; built from the SAME data as the visible FAQ
@@ -12,7 +13,7 @@
  *   Service (<page>#service)      page-specific offer, related to #catering
  * Restaurant is already a schema.org FoodEstablishment subtype, so no second
  * FoodEstablishment node is emitted (it would read as a separate business).
- *   Article (/whats-new/#article)  author and publisher -> Restaurant, dated
+ *   Article (<page>#article)      author and publisher -> Organization, dated
  *
  * Deliberately absent: AggregateRating and review (self-served ratings earn no rich
  * result), makesOffer (offers change; they are shown on the pages with a checked
@@ -25,7 +26,7 @@
  * here by hand.
  */
 import { site, ROUTES, hasHours, assetUrl, pageContentUpdated, NAME_SPELLINGS, NAME_TAMIL_VARIANT } from "../data/site.js";
-import { getFact, factOr, RESTAURANT_ID, CATERING_ID, cateringContacts, toE164, BYO_DEFINITION } from "../data/entity-truth.ts";
+import { getFact, factOr, ORGANIZATION_ID, RESTAURANT_ID, CATERING_ID, cateringContacts, toE164, BYO_DEFINITION } from "../data/entity-truth.ts";
 import verification from "../../config/client-verification.json";
 import { MENU_NOTES } from "../data/menu-canonical.ts";
 import { allItems, priceRange, summarise } from "./menu-facts.js";
@@ -38,6 +39,7 @@ const CATERING_DIET_CAP = CATERING_DIET.charAt(0).toUpperCase() + CATERING_DIET.
 const CONTEXT = "https://schema.org";
 
 const ids = {
+  organization: ORGANIZATION_ID,
   restaurant: RESTAURANT_ID,
   website: `${site.url}/#website`,
 };
@@ -77,6 +79,7 @@ export function restaurantSchema() {
     "@type": "Restaurant",
     "@id": ids.restaurant,
     name: getFact("name"),
+    parentOrganization: { "@id": ids.organization },
     alternateName: alternateNames,
     description: `${getFact("name")} is a ${getFact("typeLong")} on ${getFact("street")}, ${site.address.city}. It serves ${getFact("mealTimes")}.`,
     url: `${site.url}/`,
@@ -127,6 +130,26 @@ export function restaurantSchema() {
   };
 }
 
+export function organizationSchema(restaurant) {
+  return {
+    "@type": "Organization",
+    "@id": ids.organization,
+    name: getFact("name"),
+    url: `${site.url}/`,
+    logo: assetUrl("images/logo.webp"),
+    description: restaurant.description,
+    telephone: restaurant.telephone,
+    address: restaurant.address,
+    contactPoint: {
+      "@type": "ContactPoint",
+      contactType: "restaurant enquiries",
+      telephone: restaurant.telephone,
+    },
+    sameAs: getFact("sameAs"),
+    location: { "@id": ids.restaurant },
+  };
+}
+
 export function webSiteSchema() {
   return {
     "@context": CONTEXT,
@@ -135,7 +158,7 @@ export function webSiteSchema() {
     url: `${site.url}/`,
     name: getFact("name"),
     inLanguage: site.locale.replace("_", "-"),
-    publisher: { "@id": ids.restaurant },
+    publisher: { "@id": ids.organization },
   };
 }
 
@@ -295,7 +318,7 @@ export function faqPageSchema(path, items) {
 }
 
 /**
- * Article for a dated page (/whats-new/, guides). Published by the Restaurant. A guide
+ * Article for a dated page (/whats-new/, guides). Published by Brihadhee. A guide
  * passes `about` (topic names) and then only `mentions` the Restaurant; dateModified
  * follows the route's content revision.
  */
@@ -312,8 +335,8 @@ export function articleSchema({ path, headline, description, datePublished, imag
     dateModified: dateModified > datePublished ? dateModified : datePublished,
     inLanguage: site.locale.replace("_", "-"),
     image: [assetUrl(image)],
-    author: { "@id": ids.restaurant },
-    publisher: { "@id": ids.restaurant },
+    author: { "@id": ids.organization },
+    publisher: { "@id": ids.organization },
     ...(about
       ? { about: about.map((name) => ({ "@type": "Thing", name })), mentions: { "@id": ids.restaurant } }
       : { about: { "@id": ids.restaurant } }),
@@ -321,8 +344,9 @@ export function articleSchema({ path, headline, description, datePublished, imag
   };
 }
 
-/** Graph for a page: Restaurant + WebSite + WebPage + BreadcrumbList (+ extras). */
+/** Graph for a page: Organization + Restaurant + WebSite + WebPage (+ extras). */
 export function pageGraph({ path, title, description, crumbs, extras = [] }) {
+  const restaurant = restaurantSchema();
   const primaryContent = extras.find((node) => ["Menu", "ItemList", "Service", "Article"].includes(node?.["@type"]));
   const isCateringPage = verification.offer_catering === true && (primaryContent?.["@type"] === "Service" || path === ROUTES.cateringQuote);
   const includeCatering = isCateringPage || (path === ROUTES.home && verification.offer_catering === true);
@@ -331,7 +355,8 @@ export function pageGraph({ path, title, description, crumbs, extras = [] }) {
   const primaryEntityId = primaryContent?.["@id"] ?? (isRestaurantPage || isCateringPage ? subjectId : null);
   const faq = extras.find((node) => node?.["@type"] === "FAQPage");
   return [
-    restaurantSchema(),
+    restaurant,
+    organizationSchema(restaurant),
     webSiteSchema(),
     ...webPageSchemas({ path, title, description, crumbs, primaryEntityId, faqId: faq?.["@id"], subjectId }),
     ...extras.map((node) => node === faq ? { ...faq, about: { "@id": subjectId } } : node),

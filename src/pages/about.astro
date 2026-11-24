@@ -32,7 +32,7 @@ const founders = getFact("founders");
 const landmark = getFact("landmarks")[0];
 const { range, open: OPEN, close: CLOSE } = openingTimes();
 const path = ROUTES.about;
-const title = `${name} Address, Timings & Contact | Anna Nagar East`;
+const title = `Address, Opening Hours and Contact, Anna Nagar | ${name}`;
 const description = `Visit ${name} on ${street}, near ${landmark}. Open daily ${range}. Get directions or call ${phone}.`;
 const schema = pageGraph({
   path,
@@ -54,6 +54,12 @@ const schema = pageGraph({
       primaryAction={{ label: "Address and landmark directions", href: "#find-us" }}
     />
     <AtAGlance />
+    <section class="section" aria-labelledby="dietary-visit-title">
+      <div class="container">
+        <h2 id="dietary-visit-title" class="section__title">Planning a visit with dietary requirements?</h2>
+        <p>Brihadhee welcomes no-garlic requests, with no-onion options where available. Jain guests and Marwari families can discuss ingredients and preparation with the team before ordering. Read the <a href={href(ROUTES.noOnionNoGarlic)}>dietary request guide</a> or call to check your chosen dishes.</p>
+      </div>
+    </section>
 
     <section class="section" id="find-us" aria-labelledby="find-us-title">
       <div class="container dish-page__grid">

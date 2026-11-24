@@ -92,6 +92,13 @@ const aeoRevisedPages = new Set([
 
 export function pageContentUpdated(path) {
   const canonicalPath = path.endsWith("/") ? path : `${path}/`;
+  const revised = [
+    ROUTES.home, ROUTES.menu, ROUTES.dosa, ROUTES.about, ROUTES.faq, ROUTES.seasonal,
+    ROUTES.noOnionNoGarlic, ROUTES.corporateCatering, ROUTES.eventCatering, ROUTES.book,
+    ROUTES.parotta, ROUTES.whatsNew, ROUTES.nellaiGuide, ROUTES.plannerPartner,
+    ROUTES.lunch, ROUTES.dinner, ROUTES.familyDining, ROUTES.cateringQuote, ROUTES.smallFunctions,
+  ];
+  if (revised.includes(canonicalPath)) return "2026-11-23";
   if (aeoRevisedPages.has(canonicalPath)) return SEO_AEO_GEO_REVISION;
   return revisedPages.has(canonicalPath) && KEYWORD_CONTENT_REVISION > CONTENT_UPDATED
     ? KEYWORD_CONTENT_REVISION
@@ -107,6 +114,8 @@ export const NAME_TAMIL_VARIANT = "பிரிஹாதீ";
 
 /** Site-relative href for a route (respects the build base path). */
 export const href = (path) => `${BASE_URL}${path.replace(/^\//, "")}`;
+
+export const HERO_IMAGE_SIZES = "(max-width: 600px) 82vw, (max-width: 899px) 85vw, (max-width: 1180px) 42vw, 30rem";
 
 /**
  * Responsive WebP for a photo in public/images (see scripts/optimize-images.mjs):
@@ -341,7 +350,7 @@ export const site = {
           },
         ]
       : []),
-    ...(ENABLE_NO_ONION_NO_GARLIC_CLUSTER ? [{ label: "No Onion, No Garlic", href: href(ROUTES.noOnionNoGarlic) }] : []),
+    ...(ENABLE_NO_ONION_NO_GARLIC_CLUSTER ? [{ label: "No-Garlic Requests", href: href(ROUTES.noOnionNoGarlic) }] : []),
     { label: "Visit & Contact", href: href(ROUTES.about) },
   ],
 
@@ -360,7 +369,7 @@ export const site = {
           { label: "Event Planner Partner", href: href(ROUTES.plannerPartner) },
         ]
       : []),
-    ...(ENABLE_NO_ONION_NO_GARLIC_CLUSTER ? [{ label: "No Onion, No Garlic", href: href(ROUTES.noOnionNoGarlic) }] : []),
+    ...(ENABLE_NO_ONION_NO_GARLIC_CLUSTER ? [{ label: "No-Garlic Requests", href: href(ROUTES.noOnionNoGarlic) }] : []),
     { label: "Visit & Contact", href: href(ROUTES.about) },
     { label: "Careers", href: "#careers" },
   ],

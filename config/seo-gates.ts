@@ -32,23 +32,16 @@ export const EMIT_FAQPAGE = true;
  * including items sourced elsewhere, on 15 November 2026. */
 export const IS_CATERING_PURE_VEG = true;
 
-/** Q11 to Q14: the no-onion-no-garlic page, its FAQ and nav link (keyword plan 3.15a, 3.15c, 3.15d, 3.16, 4.8). */
-export const ENABLE_NO_ONION_NO_GARLIC_CLUSTER = false;
 /**
- * Q12: dishes the kitchen confirms it can make without onion and garlic, dish by dish
- * (including podi, sambar powder, tadka, shared tawa and ghee). Must be non-empty
- * before ENABLE_NO_ONION_NO_GARLIC_CLUSTER is turned on.
+ * The owner request of 23 November 2026 approves a public dietary guidance page.
+ * Exact dish recipes and preparation arrangements remain owner TODOs.
  */
+export const ENABLE_NO_ONION_NO_GARLIC_CLUSTER = true;
+// TODO(owner) Supply confirmed recipes and preparation details before naming eligible dishes.
 export const NO_ONION_NO_GARLIC_DISHES: readonly string[] = [];
-/** Q12: "on request" or "always available". Leave null until confirmed. */
-export const NO_ONION_NO_GARLIC_AVAILABILITY: "on request" | "always available" | null = null;
-
-/**
- * Q13 and Q14: Jain-friendly wording (keyword plan 3.15b). Never "pure Jain",
- * "100% Jain", "strictly Jain" or "Jain certified" (section 7), even when on.
- * Needs ENABLE_NO_ONION_NO_GARLIC_CLUSTER.
- */
-export const ENABLE_JAIN_FRIENDLY_CLAIMS = false;
+export const NO_ONION_NO_GARLIC_AVAILABILITY: "on request" | "always available" | null = "on request";
+/** Audience guidance only, with ingredient and preparation confirmation for each order. */
+export const ENABLE_JAIN_FRIENDLY_CLAIMS = true;
 
 /** Q17: Hindi (Hinglish and Devanagari) copy on the website. Tamil is already approved. */
 export const ENABLE_HINDI_COPY = false;
@@ -67,7 +60,7 @@ export const ENABLE_BRAHMIN_RELIGIOUS_FUNCTIONS = false;
 export const ENABLE_SUB_BRAND = false;
 
 /** Q22: may the site call Brihadhee "premium"? */
-export const ENABLE_PREMIUM_WORDING = false;
+export const ENABLE_PREMIUM_WORDING = true; // Owner request, 23 November 2026. Specific recipes still require kitchen confirmation.
 
 /* ---- Catering enquiry ---------------------------------------------------- */
 
@@ -99,20 +92,11 @@ export const MEAL_FRAMING = "Lunch & Dinner Only";
 export const ENABLE_NAMED_TEMPLE = false;
 export const NEARBY_TEMPLE: { name: string; where: string } | null = null;
 
-/* ---- The one permitted mention of a retired service ----------------------- */
+/* ---- Dining schedule FAQ ------------------------------------------------ */
 
-/**
- * Keyword plan 4.2 and 4.7: one FAQ answers "Does Brihadhee serve breakfast?" with
- * "No ... lunch and dinner only", to correct listings that still show a morning
- * opening. This exact question is the ONLY place the word may appear; the answer
- * itself never repeats it. The checks (check-facts, aeo-lint, verify-seo-compliance)
- * remove exactly this string before scanning, nothing else.
- */
-export const NEGATIVE_FAQ_QUESTION = "Does Brihadhee serve breakfast?";
-/** Anchor id for that FAQ item (the default id would put the word into a URL fragment). */
+/** Legacy export names are retained for the existing validators and page callers. */
+export const NEGATIVE_FAQ_QUESTION = "Which meals does Brihadhee serve?";
 export const NEGATIVE_FAQ_ID = "meal-times";
-
-/** Remove the permitted negative FAQ question from text before a retired-term scan. */
 export function stripPermittedNegatives(text: string): string {
   return text.split(NEGATIVE_FAQ_QUESTION).join(" ");
 }

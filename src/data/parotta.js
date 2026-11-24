@@ -23,7 +23,7 @@ const lower = (text) => text.charAt(0).toLowerCase() + text.slice(1);
 
 export const parottaPage = {
   path: ROUTES.parotta,
-  title: "Vegetarian Parotta in Anna Nagar | Brihadhee Chennai",
+  title: "Vegetarian Parotta in Anna Nagar, Chennai | Brihadhee",
   description: "Explore Paanai Parotta, veg kothu parotta and vegetarian salna at Brihadhee, Anna Nagar East. See menu prices, daily hours and directions near Anna Tower.",
   h1: "Vegetarian Parotta in Anna Nagar",
   intro: `Brihadhee serves vegetarian parotta on ${getFact("street")}, Chennai, near ${getFact("landmarks")[0]}. Choose from ${paanai.name}, ${kothu.name}, salna parotta and more. Compare the ${parottaDishes.count} dishes below, priced ${priceRange(parottaDishes)} before GST.`,
