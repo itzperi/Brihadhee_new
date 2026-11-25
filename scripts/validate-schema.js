@@ -17,7 +17,7 @@
  */
 import { readFileSync, readdirSync, statSync, existsSync } from "node:fs";
 import { join, resolve, relative } from "node:path";
-import { BYO_DEFINITION, CATERING_ID, RESTAURANT_ID, FACTS, SITE_ORIGIN, cateringContacts, getFact, isConfirmed, toE164 } from "../src/data/entity-truth.ts";
+import { BYO_DEFINITION, CATERING_ID, ORGANIZATION_ID, RESTAURANT_ID, FACTS, SITE_ORIGIN, cateringContacts, getFact, isConfirmed, toE164 } from "../src/data/entity-truth.ts";
 import { MENU, MENU_NOTES } from "../src/data/menu-canonical.ts";
 import { CATERING_DIET, EMIT_FAQPAGE } from "../config/seo-gates.ts";
 import { firstAnswerSentence } from "../src/lib/answers.js";
@@ -40,18 +40,18 @@ const SITE = {
   postal: FACTS.address.value.postalCode,
 };
 
-// Key.md is gitignored, so it only exists locally.
-const keyPath = join(ROOT, "Key.md");
+// Keys.md is the tracked keyword source. Retain the legacy local brief fallback.
+const keyPath = existsSync(join(ROOT, "Keys.md")) ? join(ROOT, "Keys.md") : join(ROOT, "Key.md");
 let KEY = null;
 if (existsSync(keyPath)) {
   const k = readFileSync(keyPath, "utf8");
   KEY = {
-    entity: k.match(/^- Entity: (.+)$/m)?.[1]?.trim(),
-    location: k.match(/^- Location: (.+)$/m)?.[1]?.trim(),
-    cuisine: k.match(/^- Cuisine: (.+)$/m)?.[1]?.trim(),
+    entity: (k.match(/^\| Entity \| ([^|]+) \|$/m)?.[1] ?? k.match(/^- Entity: (.+)$/m)?.[1])?.trim(),
+    location: (k.match(/^\| Location \| ([^|]+) \|$/m)?.[1] ?? k.match(/^- Location: (.+)$/m)?.[1])?.trim(),
+    cuisine: (k.match(/^\| Cuisine \| ([^|]+) \|$/m)?.[1] ?? k.match(/^- Cuisine: (.+)$/m)?.[1])?.trim(),
   };
 } else {
-  warnings.push("Key.md not found (gitignored): skipped Key.md comparison.");
+  warnings.push("Keys.md and the legacy Key.md brief are absent. Skipped keyword identity comparison.");
 }
 
 // Catering pages (Pillar 2). The flagship page's FAQ must come from this list,
@@ -224,9 +224,22 @@ for (const { name, html, nodes } of pages) {
 
   /* WebSite / WebPage / BreadcrumbList */
   const canonical = html.match(/<link rel="canonical" href="([^"]+)"/)?.[1];
+  const org = nodes.filter((n) => typeOf(n).includes("Organization"));
+  if (org.length !== 1 || org[0]?.["@id"] !== ORGANIZATION_ID) err(name, "expected one Organization with the stable site ID");
+  if (r?.parentOrganization?.["@id"] !== ORGANIZATION_ID || org[0]?.location?.["@id"] !== RESTAURANT_ID) {
+    err(name, "Restaurant and Organization must reference each other");
+  }
+  if (!org[0]?.description || org[0]?.contactPoint?.telephone !== toE164(SITE.phone) || !org[0]?.sameAs?.length) {
+    err(name, "Organization needs a description, the verified restaurant contact and identity links");
+  }
   const ws = nodes.filter((n) => typeOf(n).includes("WebSite"));
   if (ws.length !== 1) err(name, `expected exactly 1 WebSite node, found ${ws.length}`);
-  if (ws[0]?.publisher?.["@id"] !== RESTAURANT_ID) err(name, "WebSite.publisher must reference the Restaurant");
+  if (ws[0]?.publisher?.["@id"] !== ORGANIZATION_ID) err(name, "WebSite.publisher must reference the Organization");
+  for (const article of nodes.filter((n) => typeOf(n).includes("Article"))) {
+    if (article.author?.["@id"] !== ORGANIZATION_ID || article.publisher?.["@id"] !== ORGANIZATION_ID) {
+      err(name, "Article author and publisher must reference the Organization");
+    }
+  }
   const wp = nodes.find((n) => typeOf(n).includes("WebPage"));
   const sharedCatering = nodes.find((n) => n["@id"] === CATERING_ID);
   const pageService = nodes.find((n) => n["@id"] === `${canonical}#service`);

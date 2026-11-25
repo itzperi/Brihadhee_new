@@ -7,6 +7,9 @@
  */
 import SpokePage from "../components/SpokePage.astro";
 import { faqHubPage } from "../data/spokes.js";
+import TamilSummary from "../components/TamilSummary.astro";
 ---
 
-<SpokePage page={faqHubPage} />
+<SpokePage page={faqHubPage}>
+  <TamilSummary />
+</SpokePage>

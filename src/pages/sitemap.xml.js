@@ -12,25 +12,28 @@ import { smallFunctionsPage, quotePage, noOnionPage } from "../data/spokes.js";
 export function GET() {
   const catering = verification.offer_catering === true;
   const pages = [
-    { path: "/", priority: "1.0" },
-    { path: "/menu/", priority: "0.9" },
+    { path: ROUTES.home, priority: "1.0" },
+    { path: ROUTES.menu, priority: "0.9" },
     { path: ROUTES.dosa, priority: "0.9" },
     { path: ROUTES.parotta, priority: "0.8" },
     { path: ROUTES.lunch, priority: "0.8" },
     { path: ROUTES.dinner, priority: "0.8" },
     { path: ROUTES.familyDining, priority: "0.8" },
-    { path: "/about/", priority: "0.8" },
-    { path: "/book-a-table/", priority: "0.8" },
+    { path: ROUTES.about, priority: "0.8" },
+    { path: ROUTES.book, priority: "0.8" },
+    { path: ROUTES.offers, priority: "0.7" },
+    { path: ROUTES.photos, priority: "0.6" },
     { path: ROUTES.faq, priority: "0.7" },
     { path: ROUTES.whatsNew, priority: "0.7" },
     { path: ROUTES.seasonal, priority: "0.7" },
     { path: ROUTES.nellaiGuide, priority: "0.6" },
+    { path: ROUTES.karaikudiNellaiGuide, priority: "0.6" },
     ...(catering
       ? [
-          { path: "/catering-services-chennai/", priority: "0.9" },
+          { path: ROUTES.eventCatering, priority: "0.9" },
           ...(smallFunctionsPage ? [{ path: ROUTES.smallFunctions, priority: "0.9" }] : []),
           ...(quotePage ? [{ path: ROUTES.cateringQuote, priority: "0.8" }] : []),
-          { path: "/event-planner-catering-partner/", priority: "0.8" },
+          { path: ROUTES.plannerPartner, priority: "0.8" },
           ...(corporateEnabled ? [{ path: ROUTES.corporateCatering, priority: "0.9" }] : []),
         ]
       : []),

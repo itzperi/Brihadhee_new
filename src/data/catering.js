@@ -284,14 +284,14 @@ export const plannerFaqs = qaRoute(PLANNER_PATH, plannerFaq);
 
 /* ---- Page metadata ----------------------------------------------------- */
 export const meta = {
-  title: `${titleDiet} Wedding & Event Caterers in Chennai | Brihadhee`,
-  description: `${CDcap} wedding and event caterers in Chennai, based in Anna Nagar East: regional South Indian menus, live counters and per-plate quotes.`,
+  title: `Pure Veg Event Catering Chennai (50–1,500) | Brihadhee`,
+  description: `End-to-end pure veg event catering in Chennai for weddings & housewarmings (50–1,500 guests). Live Dosa & Paanai Parotta counters. Call +91 94442 24999.`,
   h1: `${CDtitle} Event and Wedding Catering in Chennai`,
 };
 
 export const plannerMeta = {
   title: "Catering Partner for Event Planners in Chennai | Brihadhee",
-  description: `Plan ${CD} menus and white-label or co-branded live counters for Chennai events with Brihadhee. Send your agency's event brief.`,
+  description: `Plan ${CD} menus and white-label or co-branded live counters for Chennai events with Brihadhee. Share your agency's brief for a quote.`,
   h1: "Catering Partner for Event Planners in Chennai",
 };
 
@@ -380,8 +380,8 @@ const hasService = (re) => corpServices.some((x) => re.test(x));
 export const corporateEnabled = Boolean(cateringEnabled && corporate);
 
 export const corporateMeta = {
-  title: `${titleDiet} Corporate Catering in Chennai | Brihadhee`,
-  description: `${CDcap} office lunch catering, bulk meals and recurring employee meal programmes in Chennai. Share your office location and headcount for a quote.`,
+  title: `Pure Veg Corporate Catering Chennai | 1,000+/Day | Brihadhee`,
+  description: `FSSAI-licensed pure veg office lunch & event catering across OMR, Guindy, Ambattur & Anna Nagar. Trusted by Nestlé, Prodapt & HungerBox. Book a tasting.`,
   h1: `${CDtitle} Corporate Catering and Office Lunches in Chennai`,
 };
 
@@ -447,7 +447,7 @@ export const corporatePage = corporateEnabled
       services: {
         id: "services",
         title: "Corporate Catering Services",
-        lead: `Choose recurring office lunches, a packed bulk meal order or a staffed office event. Brihadhee offers ${CD} menus for each service.`,
+        lead: `Brihadhee offers ${CD} catering for Chennai offices, including recurring staff lunches, packed bulk meal orders and office events. Tell the team whether you need meals on a recurring schedule or for one date. Share the headcount, office location and setup to discuss the right service.`,
         tint: true,
         items: [
           hasService(/daily office lunch/) && {
@@ -471,7 +471,7 @@ export const corporatePage = corporateEnabled
       menus: {
         id: "menus",
         title: `Sample ${CDtitle} Corporate Menus`,
-        lead: "These sample menus are built from dishes Brihadhee already serves at its restaurant; your final menu, portions and per-plate price are agreed with your team before the trial week.",
+        lead: "Brihadhee’s sample office menus draw from the dishes served at its restaurant, including South Indian lunch and Nellai Special Sodhi Meals. Review the examples with your team, then discuss menu rotation, portion sizes and the per-plate price with Brihadhee before the trial week.",
         items: [
           {
             title: "Standard South Indian Office Lunch",

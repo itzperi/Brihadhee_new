@@ -2838,6 +2838,7 @@ a.contact__channel:hover {
 .glance__row dt { font-size: 0.8rem; letter-spacing: 0.08em; text-transform: uppercase; opacity: 0.7; }
 .glance__row dd { margin: 0.2rem 0 0; font-weight: 500; }
 .glance__more { margin: 1rem 0 0; font-size: 0.9rem; }
+.glance__lead { margin: 0.75rem 0 0; max-width: 65ch; }
 .footer__glossary { font-size: 0.85rem; opacity: 0.85; }
 /* Fact table inside a content section (ContentSection `facts`). */
 .content__facts { margin: 1.25rem 0 0.5rem; }
@@ -3898,3 +3899,10 @@ a.contact__channel:focus-visible {
 .contact__channel strong {
   color: var(--ink);
 }
+
+/* ---------- /photos/ ---------- */
+.photos__grid { display: grid; gap: 1rem; margin-top: 1.25rem; grid-template-columns: repeat(auto-fit, minmax(min(18rem, 100%), 1fr)); }
+.photos__item { margin: 0; }
+.photos__item img { display: block; width: 100%; height: auto; border-radius: var(--radius); }
+.photos__item figcaption { margin-top: 0.4rem; font-size: 0.9rem; opacity: 0.8; }
+.hero__offer { margin: 0.75rem 0 0; font-size: 0.9rem; }

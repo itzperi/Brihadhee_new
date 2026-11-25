@@ -42,6 +42,8 @@ const isCateringPage = Boolean(Astro.locals.contact);
             width="594"
             height="420"
             alt={site.name}
+            loading="lazy"
+            decoding="async"
           />
         </a>
         <p>{site.shortDescription}</p>
@@ -78,6 +80,8 @@ const isCateringPage = Boolean(Astro.locals.contact);
             <li><a href={link(item.href)}>{item.label}</a></li>
           ))}
           <li><a href={`${base}book-a-table/`}>Book a Table</a></li>
+          <li><a href={href(ROUTES.offers)}>Offers</a></li>
+          <li><a href={href(ROUTES.photos)}>Photos</a></li>
           <li><a href={href(ROUTES.familyDining)}>Family Dining</a></li>
           <li><a href={href(ROUTES.faq)}>FAQ</a></li>
           <li><a href={`${base}guides/what-are-nellai-meals/`}>Guide: What Are Nellai Meals?</a></li>

@@ -203,8 +203,8 @@ const walkIn = offer("walk-in").description.replace(/ for walk-in dine-in$/, "")
 export const bookingFaq = qaRoute("/book-a-table/", [
   qa(
     `How can I book a table at ${name}?`,
-    `Book a table at ${name} in ${AREA} through ${bookingOr}. ` +
-      `Choose the date, time and party size, then check the partner's booking status before you travel. For group seating, call the restaurant on ${phone}.`,
+    `Book a table at ${name} in ${AREA} by selecting your seats on the restaurant website. ` +
+      `Keep the booking ID or use ${bookingOr} and check your status in the app. For group seating, call ${phone}.`,
     { id: "is-a-table-booking-at-brihadhee-confirmed-instantly" }
   ),
   qa(

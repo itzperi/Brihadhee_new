@@ -1,10 +1,8 @@
 ---
 /**
- * /book-a-table/: how to reserve. Brihadhee takes pre-bookings through partner
- * apps (Swiggy Dineout, EazyDiner, District), so there is no booking form here:
- * a form without a confirmed endpoint would lose bookings. The page says so, and
- * says a group can confirm seating by phone (AEO audit 2026-11-12: whether a
- * request is an instant booking was unclear). Q&A: bookingFaq in src/data/faq.js. Offers come from
+ * /book-a-table/: direct reservations, partner apps and group seating by phone.
+ * The interactive seat selector lives at /reserve-table/.
+ * Q&A: bookingFaq in src/data/faq.js. Offers come from
  * entity-truth.ts (owner-confirmed; re-check monthly). Only partner URLs in
  * FACTS.bookingLinks are linked; the others are named.
  */
@@ -16,7 +14,7 @@ import Icon from "../components/Icon.astro";
 import { getFact, FACTS, longDate } from "../data/entity-truth.ts";
 import Faq from "../components/Faq.astro";
 import { pageGraph, faqPageSchema, HOME_CRUMBS } from "../lib/schema.js";
-import { ROUTES, href, telHref } from "../data/site.js";
+import { ROUTES, href, pageContentUpdated, telHref } from "../data/site.js";
 import { bookingFaq } from "../data/faq.js";
 
 const base = import.meta.env.BASE_URL.endsWith("/") ? import.meta.env.BASE_URL : `${import.meta.env.BASE_URL}/`;
@@ -39,8 +37,9 @@ const unlinked = partners.filter((p) => !linked.has(p));
 const partnerList = `${partners.slice(0, -1).join(", ")} or ${partners.at(-1)}`;
 
 const path = "/book-a-table/";
-const title = `${name} Table Booking | Pure Veg Restaurant, Anna Nagar`;
-const description = `Book lunch or dinner at ${name}, Anna Nagar East, through Swiggy Dineout, EazyDiner or District. Call the restaurant for group seating.`;
+const title = `Book a Table at ${name} | Up to 40% Off Anna Nagar East`;
+const description = `Reserve a pure veg table at ${name}, Anna Nagar East. Get 10% off walk-in or up to 40% off Mon–Thu via Swiggy Dineout, EazyDiner & District.`;
+const updated = pageContentUpdated(path);
 const schema = pageGraph({
   path,
   title,
@@ -56,18 +55,19 @@ const schema = pageGraph({
     <PageHeader
       eyebrow="Reservations · Anna Nagar East"
       h1={`Book a table at ${name}, Anna Nagar East`}
-      intro={`Choose a booking partner to reserve a table for ${getFact("mealTimes")} at ${name}. The partner shows your booking status. For a group table, call ${phone} so the restaurant can check seating.`}
+      intro={`Reserve a table for ${getFact("mealTimes")} at ${name}, the restaurant on ${getFact("street")}, by choosing your seats on this website. You can also book through ${partnerList}. For group seating, call ${phone}.`}
       menuHref={href(ROUTES.menu)}
-      primaryAction={{ label: "Choose a booking partner", href: "#how-to-book" }}
+      primaryAction={{ label: "Reserve a table", href: href(ROUTES.reserve), event: "reserve_table_view_click" }}
     />
+    <p class="container page-head__date">Updated <time datetime={updated}>{longDate(updated)}</time></p>
 
     <section class="section section--tint" id="how-to-book" aria-labelledby="how-title">
       <div class="container">
         <h2 class="section__title" id="how-title">How Do I Book a Table at {name}?</h2>
         <p class="section__lead">
-          Book a table at {name} in Anna Nagar East through {partnerList}: choose your date, time and party size,
-          then check your booking status in the app before you travel. For a group table, call <a href={telHref}>{phone}</a>
-          so the restaurant can check seating. Show the booking at the counter when you arrive.
+          Book a table at {name} in Anna Nagar East on the <a href={href(ROUTES.reserve)}>restaurant’s reservation page</a>.
+          Choose a date, time and seats, then keep the booking ID to show at the counter. If you book with {partnerList},
+          check your reservation status in the app before you travel.
         </p>
         <div class="page-head__actions">
           {links.map((l) => (
@@ -85,7 +85,7 @@ const schema = pageGraph({
         )}
         <p class="section__lead">
           Dining offers include {preBook.description} and {walkInPct} off for walk-in dine-in.
-          Check the offer shown for your slot in the booking app.
+          Check the offer shown for your slot in the booking app, or <a href={href(ROUTES.offers)}>compare all {name} offers</a>.
         </p>
       </div>
     </section>
@@ -94,9 +94,9 @@ const schema = pageGraph({
       <div class="container">
         <h2 class="section__title" id="groups-title">Large groups and functions</h2>
         <p class="section__lead">
-          For a large family group, <a href={telHref}>call {phone}</a> with your date, time and party size so the team can
-          check seating. For functions of 50 guests or more at your own venue, see
-          <a href={`${base}catering-services-chennai/`}>{name} catering</a>.
+          For a large family group at {name}, <a href={telHref}>call {phone}</a> with your date, time and party size so the team can
+          check seating. If you’re organising a function at your own venue in Chennai with 50 or more guests, see
+          <a href={href(ROUTES.eventCatering)}>{name} event catering</a>.
         </p>
         <p>
           Browse the <a href={href(ROUTES.menu)}>menu and prices</a>, see

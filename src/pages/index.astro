@@ -25,18 +25,19 @@ import Careers from "../components/Careers.astro";
 import Footer from "../components/Footer.astro";
 import KolamDivider from "../components/KolamDivider.astro";
 import { homePage as page } from "../data/pages.js";
-import { ROUTES, href } from "../data/site.js";
+import { ROUTES, href, site, HERO_IMAGE_SIZES } from "../data/site.js";
 ---
 
 <Base
   title={page.title}
   description={page.description}
-  ogDescription={`Brihadhee: dosas made your way, claypot Paanai Parotta, Nellai sodhi meals and filter coffee. Pure veg lunch and dinner on 3rd Avenue, Anna Nagar East.`}
+  preloadImage={{ ...site.media.hero, sizes: HERO_IMAGE_SIZES }}
+  ogDescription={`Brihadhee: dosas made your way, pot-cooked Paanai Parotta, Nellai sodhi meals and filter coffee. Pure veg lunch and dinner on 3rd Avenue, Anna Nagar East.`}
 >
   <Nav />
   <main id="main" tabindex="-1">
     <Hero h1={page.h1} coffeeBarId={page.coffeeBar.id} />
-    <AtAGlance rows={page.glance} />
+    <AtAGlance rows={page.glance} lead={page.answer} />
     <ContentSection {...page.byo} />
     <ContentSection {...page.lunch} />
     <ContentSection {...page.dinner} />

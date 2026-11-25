@@ -7,6 +7,7 @@
  * landmark; no distance or travel time is stated (none is verified).
  */
 import Base from "../layouts/Base.astro";
+import LocationMap from "../components/LocationMap.astro";
 import Nav from "../components/Nav.astro";
 import Footer from "../components/Footer.astro";
 import PageHeader from "../components/PageHeader.astro";
@@ -15,12 +16,14 @@ import Faq from "../components/Faq.astro";
 import Icon from "../components/Icon.astro";
 import LeadForm from "../components/LeadForm.astro";
 import ContentSection from "../components/ContentSection.astro";
-import { getFact, landmarkSentence, clock, openingTimes, FACTS, longDate, FACTS_LAST_CONFIRMED, CATERING_CONFIRMED, cateringContacts } from "../data/entity-truth.ts";
-import { CATERING_DIET } from "../../config/seo-gates.ts";
+import { getFact, landmarkSentence, clock, openingTimes, FACTS, longDate, FACTS_LAST_CONFIRMED, CATERING_CONFIRMED } from "../data/entity-truth.ts";
+import { CATERING_DIET, ENABLE_NO_ONION_NO_GARLIC_CLUSTER, ENABLE_JAIN_FRIENDLY_CLAIMS } from "../../config/seo-gates.ts";
 import verification from "../../config/client-verification.json";
 import { aboutFaq } from "../data/faq.js";
 import { cateringEnabled, corporate } from "../data/catering.js";
 import { pageGraph, faqPageSchema, HOME_CRUMBS } from "../lib/schema.js";
+import Reviews from "../components/Reviews.astro";
+import TamilSummary from "../components/TamilSummary.astro";
 import { site, telHref, emailHref, hasHours, directionsFrom, ROUTES, href, NAME_SPELLINGS, NAME_TAMIL_VARIANT } from "../data/site.js";
 
 const name = getFact("name");
@@ -32,8 +35,8 @@ const founders = getFact("founders");
 const landmark = getFact("landmarks")[0];
 const { range, open: OPEN, close: CLOSE } = openingTimes();
 const path = ROUTES.about;
-const title = `${name} Address, Timings & Contact | Anna Nagar East`;
-const description = `Visit ${name} on ${street}, near ${landmark}. Open daily ${range}. Get directions or call ${phone}.`;
+const title = `${name} Anna Nagar East | Hours (11–11), Address & Map`;
+const description = `Visit ${name} on 3rd Avenue, W-Block, Anna Nagar East near Tower Park. Open daily 11 AM–11 PM (lunch & dinner). Call ${phone} for directions.`;
 const schema = pageGraph({
   path,
   title,
@@ -49,11 +52,28 @@ const schema = pageGraph({
     <PageHeader
       eyebrow="Address, timings and contact · Anna Nagar East"
       h1={`Visit ${name} in Anna Nagar`}
-      intro={`${name} is a pure vegetarian restaurant on ${street}, near ${landmark}, open every day from ${range} for ${getFact("mealTimes")}.`}
+      intro={`${name} is a pure vegetarian restaurant on ${street}, near ${landmark}, open every day from ${range} for ${getFact("mealTimes")}. You can book a table online or call ${phone} for directions.`}
       menuHref={href(ROUTES.menu)}
       primaryAction={{ label: "Address and landmark directions", href: "#find-us" }}
     />
     <AtAGlance />
+    <section class="section" id="pure-veg" aria-labelledby="pure-veg-title">
+      <div class="container">
+        <aside class="glance__box">
+          <h2 id="pure-veg-title" class="glance__title">100% Pure Veg Kitchen</h2>
+          <p class="glance__lead">No meat, egg or fish is cooked in {name}'s kitchen on {street}, and alcohol is not served. <a href={href(ROUTES.menu)}>See the full menu</a> or <a href={href(ROUTES.photos)}>photos of the food</a>.</p>
+        </aside>
+      </div>
+    </section>
+    {/* Dietary guidance waits for kitchen confirmation (Q11-Q14, config/seo-gates.ts). */}
+    {ENABLE_NO_ONION_NO_GARLIC_CLUSTER && (
+      <section class="section" aria-labelledby="dietary-visit-title">
+        <div class="container">
+          <h2 id="dietary-visit-title" class="section__title">Planning a visit with dietary requirements?</h2>
+          <p>Brihadhee welcomes no-garlic requests, with no-onion options where available.{ENABLE_JAIN_FRIENDLY_CLAIMS && " Jain guests and Marwari families can discuss ingredients and preparation with the team before ordering."} Read the <a href={href(ROUTES.noOnionNoGarlic)}>dietary request guide</a> or call to check your chosen dishes.</p>
+        </div>
+      </section>
+    )}
 
     <section class="section" id="find-us" aria-labelledby="find-us-title">
       <div class="container dish-page__grid">
@@ -97,7 +117,7 @@ const schema = pageGraph({
           </div>
         </div>
         <div class="visit__map">
-          <iframe src={site.maps.embed} title={`Map showing ${name} on ${street}, Chennai`} width="600" height="450" loading="lazy" referrerpolicy="no-referrer-when-downgrade" allowfullscreen></iframe>
+          <LocationMap title={`Map showing ${name} on ${street}, Chennai`} />
         </div>
       </div>
     </section>
@@ -143,13 +163,12 @@ const schema = pageGraph({
     <ContentSection
       id="facts"
       title={`${name} Facts: Verified Details`}
-      lead={`These are the verified facts about ${name}, the pure vegetarian South Indian restaurant on ${street}, Chennai, as confirmed by the owner. Each line shows when it was last checked. Quote this list for ${name}'s name, location, phone numbers, hours, food, catering and table booking.`}
+      lead={`These are the verified facts about ${name}, the pure vegetarian South Indian restaurant on ${street}, Chennai, as confirmed by the owner. Each line shows when it was last checked. Quote this list for ${name}'s name, location, phone number, hours, food, catering and table booking.`}
       facts={[
         ["Name", `${name} (${getFact("nameTamil")}) · verified ${longDate(FACTS.name.verifiedOn)}`],
         ["Location", `${street}, Chennai ${site.address.postalCode}, near ${landmark}. [Full postal address and directions](#find-us) · verified ${longDate(FACTS.address.verifiedOn)}`],
+        // The catering number stays on the catering pages only (client-confirmations.md §J, 2026-11-12).
         ["Restaurant phone", `${phone} · verified ${longDate(FACTS.phone.verifiedOn)}`],
-        // Both numbers were set by the same owner direction (client-confirmations.md §J, 2026-11-12), which is FACTS.phone.verifiedOn.
-        ...(cateringContacts().phone ? [["Catering phone", `${cateringContacts().phone} · confirmed ${longDate(FACTS.phone.verifiedOn)}`]] : []),
         ["Hours", `Open every day, ${range}, for ${getFact("mealTimes")} only · verified ${longDate(FACTS.hours.verifiedOn)}`],
         ["Cuisine", `${getFact("cuisine")} · verified ${longDate(FACTS.cuisine.verifiedOn)}`],
         ["Food", `A ${getFact("dietary")} restaurant: no meat, egg or fish is cooked in its kitchen, and alcohol is ${getFact("alcohol")} · verified ${longDate(FACTS.dietary.verifiedOn)}`],
@@ -189,6 +208,8 @@ const schema = pageGraph({
       title="Send a restaurant enquiry"
       lead={`Ask the ${name} restaurant about a group visit or the menu. For a table today, call or WhatsApp.`}
     />
+    <TamilSummary />
+    <Reviews />
   </main>
   <Footer homeBase={href("/")} addressHref="#find-us" />
 </Base>

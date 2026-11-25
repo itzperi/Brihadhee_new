@@ -3,6 +3,7 @@ import { site, ogImageUrl } from "../data/site.js";
 import { homeSchema, serializeJsonLd } from "../lib/schema.js";
 import "../styles/global.css";
 import CallBar from "../components/CallBar.astro";
+import { DINING_PHONE, cateringPhone } from "../data/contact-numbers.js";
 import frauncesUrl from "../assets/fonts/fraunces-latin.woff2?url";
 import instrumentUrl from "../assets/fonts/instrument-sans-latin.woff2?url";
 
@@ -15,6 +16,7 @@ const {
   noindex = false, // true for utility pages (privacy, 404); they are also kept out of the sitemap
   cta = "book", // mobile CTA bar: "book" (Book a table), "quote" (Get a quote, catering pages) or "none" (ad funnel pages with their own sticky bar)
   quoteAction, // optional intent-specific action in the mobile catering bar
+  preloadImage = null,
 } = Astro.props;
 
 // GA4 loads only when PUBLIC_GA4_ID is set (Vercel env var). Unset = no tracking at all.
@@ -26,9 +28,15 @@ const metaPixelId = (import.meta.env.PUBLIC_META_PIXEL_ID ?? "").trim();
 const hasMetaPixel = /^\d{10,20}$/.test(metaPixelId);
 
 const canonical = `${site.url}${path}`;
+// Digits of the numbers on this page, so analytics can name a call by the number dialled (src/scripts/main.js).
+// The catering number goes out only on catering pages ([slug].astro sets Astro.locals.contact), where it is
+// already shown: the owner rule keeps it off every other page, raw HTML included.
+const telDigits = (p) => (p ?? "").replace(/\D/g, "");
+const telCatering = Astro.locals.contact ? telDigits(cateringPhone()) : undefined;
 
 // One JSON-LD @graph per page: a single @context, nodes linked by stable @ids.
 const nodes = schema ?? homeSchema({ title, description });
+const article = nodes.find((node) => node?.["@type"] === "Article");
 // The visible breadcrumb (Breadcrumbs.astro) renders this same BreadcrumbList.
 const crumbNode = nodes.find((n) => n?.["@type"] === "BreadcrumbList");
 Astro.locals.breadcrumb = crumbNode
@@ -54,6 +62,7 @@ const base = import.meta.env.BASE_URL.endsWith("/")
     <meta name="generator" content={Astro.generator} />
     <meta name="theme-color" content="#fbf5e9" />
     <meta name="author" content={site.name} />
+    {preloadImage && <link rel="preload" as="image" href={preloadImage.src} imagesrcset={preloadImage.srcset} imagesizes={preloadImage.sizes} fetchpriority="high" />}
     <meta name="robots" content={noindex ? "noindex, follow" : "index, follow, max-image-preview:large"} />
     <meta name="geo.region" content="IN-TN" />
     <meta name="geo.placename" content="Anna Nagar East, Chennai" />
@@ -73,7 +82,13 @@ const base = import.meta.env.BASE_URL.endsWith("/")
     <link rel="manifest" href={`${base}site.webmanifest`} />
 
     <!-- Open Graph -->
-    <meta property="og:type" content="website" />
+    <meta property="og:type" content={article ? "article" : "website"} />
+    {article && (
+      <>
+        <meta property="article:published_time" content={article.datePublished} />
+        <meta property="article:modified_time" content={article.dateModified} />
+      </>
+    )}
     <meta property="og:site_name" content={site.name} />
     <meta property="og:locale" content={site.locale} />
     <meta property="og:title" content={title} />
@@ -92,7 +107,7 @@ const base = import.meta.env.BASE_URL.endsWith("/")
     <meta name="twitter:image:alt" content={site.ogImage.alt} />
 
     <!-- Fonts (self-hosted). Preload the same hashed files the CSS uses, or the browser downloads each font twice.
-         The Tamil font is not preloaded: it is only fetched when Tamil text is on screen (unicode-range). -->
+         The Tamil font is fetched when its glyphs are needed (unicode-range). -->
     <link rel="preload" href={frauncesUrl} as="font" type="font/woff2" crossorigin="anonymous" />
     <link rel="preload" href={instrumentUrl} as="font" type="font/woff2" crossorigin="anonymous" />
 
@@ -137,7 +152,7 @@ const base = import.meta.env.BASE_URL.endsWith("/")
       set:html={serializeJsonLd(graph)}
     />
   </head>
-  <body>
+  <body data-tel-dine={telDigits(DINING_PHONE)} data-tel-catering={telCatering}>
     <a class="skip-link" href="#main">Skip to content</a>
     <slot />
     {cta !== "none" && <CallBar mode={cta} quoteAction={quoteAction} />}

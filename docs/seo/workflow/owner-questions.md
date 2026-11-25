@@ -127,3 +127,26 @@ Evidence is in [`11-gsc-baseline.md`](11-gsc-baseline.md). Every step below need
 | F3 | Before ads run | **Rules.** Bookings open up to 30 days ahead, and any number of 30-minute slots and tables can be chosen. Should there be a maximum (for example 2 hours or 4 tables), a cut-off before the slot (for example 30 minutes), or a pre-booking discount (the partner offer applies only on partner apps)? | Owner | Open |
 | F4 | Now | **Sheet access.** The sheet is owned by brihadheemeta@gmail.com and is Restricted. Share it by email with the people who need it (Editor for reception, to delete a cancelled booking). It holds customer phone numbers, so don't use "Anyone with the link". | Owner | Open |
 | F5 | To go live | Add `BOOKING_SHEET_WEBHOOK_URL` and `BOOKING_SHEET_SECRET` in Vercel (values in `.env.local` on the dev machine), push `feat/reserve-table`, merge, deploy, then check `/reserve-table` returns 200. | Developer | Open |
+
+## G. From the 21 Nov 2026 baseline (`18-turn1-baseline.md`)
+
+| ID | Priority | Question or action | Who | Status |
+|---|---|---|---|---|
+| G1 | Before batch 3 | **Dosa name.** The homepage, nav and Restaurant `knownFor` say "Customized Dosa" (your direction, 13 Nov). The dosa page, menu schema, `llms.txt` and catering counters say "Build Your Own Dosa". Recommended: "Build Your Own Dosa" as the one name, with "also called Customized Dosa" in every definition. The dosa page title, H1 and URL stay as they are. Yes, or keep "Customized Dosa"? | Owner | Open |
+| G2 | Soon | **Idly and mini idly.** The menu has an "Idly & Mini Idly" section (Ghee Mini Sambar Idly, Gun Powder Idly). Are these served during lunch and dinner, 11 AM to 11 PM? If not, they come off the menu pages. | Owner | Open |
+| G3 | Soon | **Tamil name.** Google Business Profile shows ப்ரிஹதீ; the website shows பிரிஹதீ. Which spelling is correct? The other will be listed as a variant. | Owner | Open |
+| G4 | Today | **Apex redirect.** `https://brihadhee.com/` redirects to www with a 307 (temporary). In Vercel → Project → Settings → Domains → `brihadhee.com`, set the redirect to `www.brihadhee.com` as **308 Permanent**. Then `npm run check:live` should pass. | Owner or developer | Open |
+| G5 | Today | **Karthigai page indexing.** In Search Console, run URL Inspection → Request indexing for `/seasonal/karthigai-ayyappa-pure-veg/` before Karthigai Deepam on 24 Nov, and screenshot the result into `evidence/`. Needs D4 access. | Owner or developer | Open |
+
+
+## H. From the client keyword rules of 24 Nov 2026 (`20-client-keyword-alignment.md`)
+
+| ID | Priority | Question or action | Who | Status |
+|---|---|---|---|---|
+| H1 | To publish | **Dietary page.** Answer Q11–Q14, Q16 and Q34 in writing (dish list, sambar/chutney/podi ingredients, shared tawa, fermented batter, root vegetables, catering). The no-onion, no-garlic and Jain page is held off live routes until then; the tiered draft is `drafts/no-onion-no-garlic-anna-nagar.md`. | Owner and kitchen | Open |
+| H2 | Soon | **"Ghee Mini Sambar Idly (14 pcs)"** is on the 11 Nov menu, but the keyword rules ban "mini idli sambar". Keep it on the menu as a real dish (current), or take it off? Linked to G2. | Owner | Open |
+| H3 | Soon | **Breakfast question.** The 24 Nov rules ask for "Does Brihadhee serve breakfast? No…". The 23 Nov update replaced that question with "Which meals does Brihadhee serve?" (lunch and dinner only). Which wording? Switching back is one line (`NEGATIVE_FAQ_QUESTION`). | SEO lead | Open |
+| H4 | Later | **Named temple (Q24).** The rules mention the Anna Nagar Ayyappan temple. The family page names no temple until Q24 is answered. | Owner | Open |
+| H5 | Soon | **Photos with permission:** Paanai Parotta, the dining room, and a catering event or live counter. Competitor pages show these; the site has none (`public/images/interior.*` is a placeholder). | Owner | Open |
+| H6 | Soon | **Times:** when lunch and the lunch combos end, and the last-order time for dinner. | Owner | Open |
+| H7 | Later | **Catering terms and room facts:** deposit, payment methods, cancellation and lead time (Q31, Q32); seating capacity, AC; dairy or gluten in each dosa batter. Competitor service pages answer these. | Owner | Open |

@@ -11,7 +11,7 @@ import { site } from "../data/site.js";
  * Served at the host root of https://www.brihadhee.com (Vercel), so crawlers
  * honour it. GitHub Pages was turned off on 2026-11-11.
  */
-const AI_AGENTS = [
+const CRAWL_AGENTS = [
   "Googlebot", // Google Search, AI Overviews and AI Mode
   "Bingbot", // Bing, Copilot and DuckDuckGo results
   "GPTBot", // OpenAI training (allowed by owner decision)
@@ -23,6 +23,8 @@ const AI_AGENTS = [
   "Claude-SearchBot",
   "Claude-User",
   "Google-Extended", // Gemini use of Google-crawled content (allowed by owner decision)
+  "Applebot", // Apple search and discovery
+  "Applebot-Extended", // Apple generative-model training policy
 ];
 
 export function GET() {
@@ -30,8 +32,8 @@ export function GET() {
     "User-agent: *",
     "Allow: /",
     "",
-    ...AI_AGENTS.flatMap((ua) => [`User-agent: ${ua}`, "Allow: /", ""]),
-    `Sitemap: ${site.url}/sitemap-index.xml`,
+    ...CRAWL_AGENTS.flatMap((ua) => [`User-agent: ${ua}`, "Allow: /", ""]),
+    `Sitemap: ${site.url}/sitemap.xml`,
     "",
   ].join("\n");
   return new Response(body, { headers: { "Content-Type": "text/plain; charset=utf-8" } });

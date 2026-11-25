@@ -26,8 +26,8 @@ const schema = pageGraph({
 
     <section class="section section--tint menu-page__cat" id="parotta-menu" aria-labelledby="parotta-menu-title">
       <div class="container">
-        <h2 class="section__title" id="parotta-menu-title">Explore our vegetarian parotta varieties</h2>
-        <p class="section__lead">Choose salna served alongside your parotta, a shredded kothu preparation or a sealed-pot Paanai Parotta. These are the dishes and prices on Brihadhee’s current menu.</p>
+        <h2 class="section__title" id="parotta-menu-title">Which vegetarian parottas does Brihadhee serve?</h2>
+        <p class="section__lead">Brihadhee in Anna Nagar East serves parotta with a side of vegetarian salna, shredded Special Kothu Parotta and sealed-pot Paanai Parotta. For a starter, the menu lists Madras Bhel Parotta. See the dishes, ingredients and listed prices below before choosing what to order.</p>
         <p class="menu-page__note">{menuNotes.gst} {menuNotes.parcel}</p>
         <ul class="menu-page__list" role="list">
           {parottaDishes.items.map((dish) => (
@@ -47,7 +47,7 @@ const schema = pageGraph({
     <section class="section" id="vegetarian-salna" aria-labelledby="salna-title">
       <div class="container">
         <h2 class="section__title" id="salna-title">Parotta with vegetarian salna</h2>
-        <p class="section__lead">Brihadhee is a {getFact("type")}; the salna served with its parotta is vegetarian. Parotta Salna (2 pcs) comes with salna and thokku, while Madurai Salna Parotta is served with spicy Madurai-style salna.</p>
+        <p class="section__lead">Brihadhee serves vegetarian salna with its parotta in Anna Nagar East. Order Parotta Salna (2 pcs) for parotta with a side of salna and thokku, or Madurai Salna Parotta for spicy Madurai-style gravy. In Paanai Parotta, the salna cooks with the parotta in a sealed pot.</p>
         <p class="section__lead">Paanai Parotta combines parotta, salna, paneer and mushroom in a sealed pot. Special Kothu Parotta is shredded and tossed with paneer, mushroom and special masala. If you have an allergy or a dietary requirement, call the restaurant to check the dish before ordering.</p>
         {parottaLunchCombo && <p class="section__lead">At lunch, the <a href={`${href(ROUTES.menu)}#combos`}>{parottaLunchCombo.name}</a> is {rupees(parottaLunchCombo.price)} before GST. Dine-in combos are available only for lunch.</p>}
       </div>

@@ -39,6 +39,7 @@ export const ROUTES = {
   whatsNew: "/whats-new/",
   seasonal: "/seasonal/karthigai-ayyappa-pure-veg/",
   nellaiGuide: "/guides/what-are-nellai-meals/",
+  karaikudiNellaiGuide: "/guides/karaikudi-vs-nellai-veg-cuisine/",
   /* 12 Nov keyword plan spokes (section 6). The gated one is built only when its
      gate in config/seo-gates.ts is on (or as a noindex draft in dev/preview). */
   smallFunctions: "/small-function-catering-chennai/",
@@ -46,6 +47,8 @@ export const ROUTES = {
   familyDining: "/family-dining-anna-nagar/",
   faq: "/faq/",
   noOnionNoGarlic: "/no-onion-no-garlic-anna-nagar/",
+  offers: "/offers/",
+  photos: "/photos/",
 };
 
 // Use the last significant content revision of each published page. A new
@@ -92,6 +95,28 @@ const aeoRevisedPages = new Set([
 
 export function pageContentUpdated(path) {
   const canonicalPath = path.endsWith("/") ? path : `${path}/`;
+  const revised = [
+    ROUTES.home, ROUTES.menu, ROUTES.dosa, ROUTES.about, ROUTES.faq, ROUTES.seasonal,
+    ROUTES.noOnionNoGarlic, ROUTES.corporateCatering, ROUTES.eventCatering, ROUTES.book,
+    ROUTES.parotta, ROUTES.whatsNew, ROUTES.nellaiGuide, ROUTES.plannerPartner,
+    ROUTES.lunch, ROUTES.dinner, ROUTES.familyDining, ROUTES.cateringQuote, ROUTES.smallFunctions,
+  ];
+  // SEO sprint phases 2-4 (24 Nov 2026): titles, descriptions, answers, tables or new pages.
+  // Pages that only got the shared footer and mobile-bar changes keep their earlier date.
+  const sprint = [
+    ROUTES.home, ROUTES.menu, ROUTES.about, ROUTES.dosa, ROUTES.lunch, ROUTES.dinner, ROUTES.book,
+    ROUTES.eventCatering, ROUTES.corporateCatering, ROUTES.smallFunctions, ROUTES.nellaiGuide,
+    ROUTES.offers, ROUTES.photos, ROUTES.karaikudiNellaiGuide,
+  ];
+  // Client keyword alignment pass (25 Nov 2026): answers, Tamil summary, dietary gating, copy fixes.
+  const alignment = [
+    ROUTES.home, ROUTES.about, ROUTES.faq, ROUTES.menu, ROUTES.dosa, ROUTES.smallFunctions, ROUTES.cateringQuote,
+    ROUTES.familyDining, ROUTES.dinner, ROUTES.book, ROUTES.plannerPartner, ROUTES.seasonal, ROUTES.parotta,
+    ROUTES.photos, ROUTES.karaikudiNellaiGuide,
+  ];
+  if (alignment.includes(canonicalPath)) return "2026-11-25";
+  if (sprint.includes(canonicalPath)) return "2026-11-24";
+  if (revised.includes(canonicalPath)) return "2026-11-23";
   if (aeoRevisedPages.has(canonicalPath)) return SEO_AEO_GEO_REVISION;
   return revisedPages.has(canonicalPath) && KEYWORD_CONTENT_REVISION > CONTENT_UPDATED
     ? KEYWORD_CONTENT_REVISION
@@ -107,6 +132,8 @@ export const NAME_TAMIL_VARIANT = "பிரிஹாதீ";
 
 /** Site-relative href for a route (respects the build base path). */
 export const href = (path) => `${BASE_URL}${path.replace(/^\//, "")}`;
+
+export const HERO_IMAGE_SIZES = "(max-width: 600px) 82vw, (max-width: 899px) 85vw, (max-width: 1180px) 42vw, 30rem";
 
 /**
  * Responsive WebP for a photo in public/images (see scripts/optimize-images.mjs):
@@ -341,7 +368,7 @@ export const site = {
           },
         ]
       : []),
-    ...(ENABLE_NO_ONION_NO_GARLIC_CLUSTER ? [{ label: "No Onion, No Garlic", href: href(ROUTES.noOnionNoGarlic) }] : []),
+    ...(ENABLE_NO_ONION_NO_GARLIC_CLUSTER ? [{ label: "No-Garlic Requests", href: href(ROUTES.noOnionNoGarlic) }] : []),
     { label: "Visit & Contact", href: href(ROUTES.about) },
   ],
 
@@ -360,7 +387,7 @@ export const site = {
           { label: "Event Planner Partner", href: href(ROUTES.plannerPartner) },
         ]
       : []),
-    ...(ENABLE_NO_ONION_NO_GARLIC_CLUSTER ? [{ label: "No Onion, No Garlic", href: href(ROUTES.noOnionNoGarlic) }] : []),
+    ...(ENABLE_NO_ONION_NO_GARLIC_CLUSTER ? [{ label: "No-Garlic Requests", href: href(ROUTES.noOnionNoGarlic) }] : []),
     { label: "Visit & Contact", href: href(ROUTES.about) },
     { label: "Careers", href: "#careers" },
   ],

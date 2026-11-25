@@ -1,5 +1,5 @@
 ---
-import { site, hasVideo } from "../data/site.js";
+import { site, hasVideo, ROUTES, href } from "../data/site.js";
 import Icon from "./Icon.astro";
 
 const { gallery, video } = site.media;
@@ -11,7 +11,7 @@ const { gallery, video } = site.media;
       <p class="eyebrow">A taste of Brihadhee</p>
       <h2 class="section__title" id="gallery-title">South Indian favourites, freshly served</h2>
       <p class="section__lead">
-        A closer look at South Indian favourites, freshly served.
+        A closer look at South Indian favourites, freshly served. <a href={href(ROUTES.photos)}>See all photos with menu prices</a>.
       </p>
     </div>
 
@@ -79,5 +79,5 @@ const { gallery, video } = site.media;
       </button>
     </div>
   </div>
-  <img id="lightbox-image" src="" alt="Enlarged photo from the Brihadhee gallery" width="1200" height="900" />
+  <img id="lightbox-image" src={gallery[0]?.src} alt="Enlarged photo from the Brihadhee gallery" width="1200" height="900" loading="lazy" decoding="async" />
 </dialog>

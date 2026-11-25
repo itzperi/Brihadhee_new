@@ -8,9 +8,9 @@ import { site, NAME_SPELLINGS, NAME_TAMIL_VARIANT } from "../data/site.js";
 import { getFact, factOr, FACTS, canonicalAnswerLines, landmarkSentence, openingTimes, FACTS_LAST_CONFIRMED, longDate } from "../data/entity-truth.ts";
 import { faqItems, aboutFaq, menuFaq, bookingFaq } from "../data/faq.js";
 import { homePage, dosaPage, nellaiPage, dinnerPage, whatsNewPage, seasonalPage } from "../data/pages.js";
-import { nellaiGuide } from "../data/guides.js";
+import { nellaiGuide, karaikudiNellaiGuide } from "../data/guides.js";
 import { parottaPage } from "../data/parotta.js";
-import { categories, priceRange, itemCount, allVegetarian, rupees, byo, menuNotes } from "./menu-facts.js";
+import { categories, priceRange, itemCount, allVegetarian, rupees, byo, menuNotes, allItems, summarise } from "./menu-facts.js";
 import { UNPRICED_SIGNATURES } from "../data/menu-canonical.ts";
 import {
   cateringEnabled,
@@ -50,10 +50,27 @@ export function buildLlms({ full = false } = {}) {
 
   push(`# ${name}${full ? " (full reference)" : ""}`, "");
   push(
-    `> ${name} (${getFact("nameTamil")}) is a South Indian vegetarian restaurant in Anna Nagar East, Chennai, serving ${getFact("mealTimes")}. It is known for Build Your Own Dosa and Nellai meals.`,
+    `> ${name} (${getFact("nameTamil")}) is a South Indian vegetarian restaurant in Anna Nagar East, Chennai, serving ${getFact("mealTimes")}. It is known for Build Your Own Dosa and Nellai meals.${cateringEnabled ? ` It also provides ${CATERING_DIET} catering for events and offices in Chennai.` : ""}`,
     ""
   );
   push("**Canonical answers**", "", ...canonicalAnswerLines(), "", `Facts last confirmed with the owner: ${longDate(FACTS_LAST_CONFIRMED)}. Full verified list: ${u("/about/#facts")}`, "");
+
+  if (!full) {
+    // Short-file ground truth: signature dish prices, offers and named corporate clients, all from verified sources.
+    const signature = ["Nellai Special Sodhi Meals", "Paanai Parotta", "Karaikudi Paneer Poppers", "Filter Coffee"]
+      .map((n) => allItems.find((i) => i.name === n)).filter(Boolean);
+    const batters = byo.steps.find((st) => st.name === "Batter").options;
+    const clients = factOr("corporateClients", []);
+    push("## Key facts", "");
+    push("- Diet: 100% pure vegetarian. No meat, egg or fish is cooked in the restaurant kitchen.");
+    push(`- Menu prices: ${priceRange(summarise(allItems))} per dish, before 5% GST. ${signature.map((i) => `${i.name} ${rupees(i.price)}`).join("; ")}; Build Your Own Dosa batters ${priceRange(summarise(batters))}.`);
+    for (const o of offers) push(`- Offer: ${o.description}.`);
+    // Client keyword rules, 24 Nov 2026: minimum 50, corporate scale, and quotes instead of published per-plate rates.
+    if (cateringEnabled && guests)
+      push(`- Catering: ${CATERING_DIET} catering from ${guests.min.toLocaleString("en-IN")} guests (end-to-end event catering up to ${guests.max.toLocaleString("en-IN")}) and ${CORPORATE_DAILY_SCALE} for offices. Each order is quoted per event; no fixed per-plate rate is published.`);
+    if (cateringEnabled && clients.length) push(`- Corporate catering clients: ${clients.join(", ")}.`);
+    push("");
+  }
 
   if (full) {
     push("## Facts", "");
@@ -71,31 +88,35 @@ export function buildLlms({ full = false } = {}) {
     push(getFact("nameStory"), "");
   }
 
-  push("## Pages", "");
+  push("## Restaurant and Menu", "");
   push(`- [Home](${u("/")}): restaurant${cateringEnabled ? " and catering" : ""} overview, hours, location, FAQ`);
   push(`- [Menu and prices](${u("/menu/")}): dine-in dishes and listed prices`);
   push(`- [Coffee Bar](${u(`/#${homePage.coffeeBar.id}`)}): drinks at the restaurant${corporatePage ? " and a link for office events" : ""}`);
   push(`- [Menu as JSON](${u("/menu.json")}): machine-readable menu with prices in INR`);
-  push(`- [Address, timings and contact](${u("/about/")}): address, directions from Anna Nagar landmarks, hours, founders and the name story`);
-  push(`- [Verified facts](${u("/about/#facts")}): name, address, phones, hours, food, catering range and area, booking, with verification dates`);
-  push(`- [Book a table](${u("/book-a-table/")}): choose a dining partner and check booking status in its app`);
   push(`- [Build your own dosa](${u(dosaPage.path)}): how it works, chef's combinations, classic dosas`);
   push(`- [Vegetarian parotta in Anna Nagar](${u(parottaPage.path)}): parotta varieties and prices, vegetarian salna, kothu and Paanai Parotta, and directions`);
   push(`- [Lunch and Nellai meals](${u(nellaiPage.path)}): Nellai Special Sodhi Meals, Tamil home-style lunch, office lunch`);
   push(`- [Dinner until ${openingTimes().close}](${u(dinnerPage.path)}): Paanai Parotta, veg kothu parotta, idiyappam, Karaikudi Paneer Poppers`);
+  push("", "## Visiting and Reservations", "");
+  push(`- [Address, timings and contact](${u("/about/")}): address, directions from Anna Nagar landmarks, hours, founders and the name story`);
+  push(`- [Verified facts](${u("/about/#facts")}): name, address, phones, hours, food, catering range and area, booking, with verification dates`);
+  push(`- [Book a table](${u("/book-a-table/")}): direct seat reservations, dining partners and group-seating enquiries`);
   push(`- [Family dining](${u(familyPage.path)}): family lunch after a temple visit, birthday and anniversary dinners, table booking`);
   push(`- [FAQ](${u(faqHubPage.path)}): lunch and dinner only, the name, listings, table booking, and links to every page's answers`);
-  if (noOnionPage && !noOnionPage.noindex) push(`- [No onion, no garlic](${u(noOnionPage.path)}): dishes made without onion and garlic, build your own dosa your way`);
+  if (noOnionPage && !noOnionPage.noindex) push(`- [No onion, no garlic](${u(noOnionPage.path)}): no-garlic requests, no-onion options where available, and ingredient and preparation questions for Jain guests`);
   if (cateringEnabled) {
+    push("", "## Catering in Chennai", "");
     push(`- [Event catering](${u(CATERING_PATH)}): end-to-end ${CATERING_DIET} event and wedding catering in Chennai`);
     if (smallFunctionsPage) push(`- [Small function catering](${u(smallFunctionsPage.path)}): ${CATERING_DIET} catering for birthdays, housewarmings and get-togethers from ${CATERING_MIN_GUESTS} guests`);
     if (quotePage) push(`- [Catering quote](${u(quotePage.path)}): send the event type, estimated guest count, Chennai venue area, date if known, and menu and service preferences`);
     if (corporatePage) push(`- [Corporate catering](${u(CORPORATE_PATH)}): daily office lunches, bulk meals, employee meal programmes and corporate events`);
     push(`- [Event planner partner](${u(PLANNER_PATH)}): catering partner for event management companies`);
   }
+  push("", "## Guides and Updates", "");
   push(`- [What's new](${u(whatsNewPage.path)}): build-your-own dosa, Nellai lunch, dinner until ${openingTimes().close}${corporatePage ? ", corporate catering" : ""}`);
   push(`- [Karthigai and Ayyappa mala](${u(seasonalPage.path)}): pure veg lunch and dinner in Chennai${seasonalPage.sections.some(({ id }) => id === "group-catering") ? `, plus ${CATERING_DIET} group catering` : ""}`);
   push(`- [Guide: What are Nellai meals?](${u(nellaiGuide.path)}): sodhi, ulundhu kali, Tirunelveli cuisine and idiyappam pairings`);
+  push(`- [Guide: Karaikudi vs Nellai vegetarian food](${u(karaikudiNellaiGuide.path)}): coconut-milk sodhi and ulundhu kali compared with Karaikudi spice blends, with prices`);
   if (!full) {
     push("", "## Optional", "", `- [Full reference](${u("/llms-full.txt")}): full menu, offers, and customer questions`);
     return out.join("\n").trimEnd() + "\n";
@@ -149,6 +170,8 @@ export function buildLlms({ full = false } = {}) {
   qa("What's new", whatsNewPage.faq);
   qa("Karthigai and Ayyappa mala questions", seasonalPage.faq);
   qa("Family dining questions", familyPage.faq);
+  qa("Nellai food guide questions", nellaiGuide.faq);
+  if (noOnionPage && !noOnionPage.noindex) qa("Dietary requests", noOnionPage.faq);
 
   if (cateringEnabled) {
     push("## Catering", "");

@@ -68,3 +68,24 @@ multi[- ]cuisine\s+catering
 காலை\s*உணவு
 மினி\s*டிபன்
 டிபன்
+
+# --- Client keyword rules, 24 Nov 2026 (CLAUDE.md "Client keyword rules") ---
+# Positioning and retired tiffin dishes not already covered above. Exact dish
+# phrases only: "Idly & Mini Idly" and "Ghee Podi Dosa" are on the current menu.
+\baffordable\b
+\bvalue[\s-]+meals?\b
+\b(?:500|99)\s*\+\s*(?:dosas?|varieties)\b
+\bmorning[\s-]+walkers?\b
+\bpongal[\s,&-]+(?:and\s+)?vadai?\b
+\bghee[\s-]+podi[\s-]+idl[iy]s?\b
+\bmini[\s-]+idl[iy]s?[\s-]+sambar\b
+\bpoori[\s-]+masala\b
+\bkuzhi[\s-]+paniyaram\b
+\bkesari\b
+\btiny[\s-]+part(?:y|ies)\b
+# Dietary wording never allowed, even after the kitchen confirms Q11-Q14.
+\bpure[\s-]+jain\b
+\b100\s*%\s*jain\b
+\bstrictly[\s-]+jain\b
+\bmarwari[\s-]+thali\b
+\brajasthani[\s-]+thali\b

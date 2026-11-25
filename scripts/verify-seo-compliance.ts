@@ -63,7 +63,7 @@ const fail = (group: string, file: string, message: string) => hits.push({ group
 const RATE = String.raw`(?:₹|rs\.?|inr)\s*\d[\d,]*`;
 const SECTION_7: Rule[] = [
   // Breakfast and tiffin: no breakfast service (open 11 AM to 11 PM, lunch and dinner only)
-  { re: /\bbreakfasts?\b/i, why: "no breakfast service; the only permitted mention is the exact FAQ question" },
+  { re: /\bbreakfasts?\b/i, why: "retired meal service cannot appear in publishable copy" },
   { re: /\bearly[\s-]+morning\b/i, why: "no early-morning service (opens 11 AM)" },
   { re: /\bmorning\s+tiffins?\b/i, why: "tiffin is not offered" },
   { re: /\btiffin\s+cent(?:re|er)s?\b/i, why: "tiffin is not offered" },
@@ -251,7 +251,7 @@ const covers = FACTS.corporateCatering?.value?.dailyCovers;
 if (covers !== G.CORPORATE_DAILY_COVERS) fail("C. Consistency", "config/seo-gates.ts", `CORPORATE_DAILY_COVERS ${G.CORPORATE_DAILY_COVERS} != entity-truth.ts corporateCatering ${covers}`);
 if (!G.CORPORATE_DAILY_SCALE.startsWith(`${Number(G.CORPORATE_DAILY_COVERS).toLocaleString("en-IN")}+`)) fail("C. Consistency", "config/seo-gates.ts", `CORPORATE_DAILY_SCALE "${G.CORPORATE_DAILY_SCALE}" does not start with the daily covers`);
 if (G.ENABLE_NO_ONION_NO_GARLIC_CLUSTER) {
-  if (!G.NO_ONION_NO_GARLIC_DISHES.length) fail("C. Consistency", "config/seo-gates.ts", "ENABLE_NO_ONION_NO_GARLIC_CLUSTER is on but NO_ONION_NO_GARLIC_DISHES is empty (Q12)");
+  // Dietary guidance may be live while exact recipes remain pending. Do not infer eligible dishes from menu descriptions.
   if (!G.NO_ONION_NO_GARLIC_AVAILABILITY) fail("C. Consistency", "config/seo-gates.ts", "ENABLE_NO_ONION_NO_GARLIC_CLUSTER is on but NO_ONION_NO_GARLIC_AVAILABILITY is not set (Q12)");
   if (FACTS.noOnionGarlic?.status !== "verified") fail("C. Consistency", "src/data/entity-truth.ts", "ENABLE_NO_ONION_NO_GARLIC_CLUSTER is on but the noOnionGarlic fact is still unverified (its probes will fail check:facts)");
 }

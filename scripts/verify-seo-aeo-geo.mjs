@@ -273,6 +273,9 @@ for (const p of pages) {
   }
   for (const m of p.body.matchAll(/<img\b[^>]*>/g)) {
     if (!/\balt="/.test(m[0])) fail("7 Links & images", `${p.path}: <img> without alt: ${m[0].slice(0, 80)}`);
+    if (!/\bwidth="[1-9]\d*"/.test(m[0]) || !/\bheight="[1-9]\d*"/.test(m[0])) {
+      fail("7 Links & images", `${p.path}: <img> without dimensions: ${m[0].slice(0, 80)}`);
+    }
     const src = m[0].match(/\bsrc="([^"]+)"/)?.[1];
     if (src && src.startsWith("/") && !fileExists(src)) fail("7 Links & images", `${p.path}: image not found ${src}`);
   }
@@ -307,14 +310,22 @@ async function serverChecks() {
       if (res.status !== 200) fail("8 Preview server", `${path} with Accept: text/markdown returned ${res.status}`);
     }
     const robots = await (await fetch(base + "/robots.txt")).text();
-    if (!/^Sitemap:\s*https:\/\/www\.brihadhee\.com\/sitemap(-index)?\.xml/m.test(robots)) fail("8 Preview server", "robots.txt does not link the sitemap on the production origin");
-    for (const ua of ["Googlebot", "Bingbot", "OAI-SearchBot", "ChatGPT-User", "PerplexityBot", "ClaudeBot"]) {
-      if (!new RegExp(`User-agent: ${ua}\\s*\\nAllow: /`).test(robots)) fail("8 Preview server", `robots.txt does not allow ${ua}`);
+    const robotLines = new Set(robots.split(/\r?\n/));
+    if (!robotLines.has(`Sitemap: ${SITE_ORIGIN}/sitemap.xml`)) fail("8 Preview server", "robots.txt does not link the page sitemap on the production origin");
+    for (const ua of ["Googlebot", "Bingbot", "OAI-SearchBot", "ChatGPT-User", "GPTBot", "PerplexityBot", "Google-Extended", "ClaudeBot", "Claude-SearchBot", "Applebot", "Applebot-Extended"]) {
+      if (!robots.includes(`User-agent: ${ua}\nAllow: /\n`)) fail("8 Preview server", `robots.txt does not allow ${ua}`);
     }
     const sitemap = await (await fetch(base + "/sitemap.xml")).text();
-    const locs = [...sitemap.matchAll(/<loc>([^<]+)<\/loc>/g)].map((m) => m[1]);
+    const entries = new Map([...sitemap.matchAll(/<url>\s*<loc>([^<]+)<\/loc>\s*<lastmod>([^<]+)<\/lastmod>/g)].map((m) => [m[1], m[2]]));
+    const locs = [...entries.keys()];
     for (const p of indexable) if (!locs.includes(`${SITE_ORIGIN}${p.path}`)) fail("8 Preview server", `sitemap.xml is missing ${p.path}`);
     for (const l of locs) if (!indexable.some((p) => `${SITE_ORIGIN}${p.path}` === l)) fail("8 Preview server", `sitemap.xml lists a page that is not built or is noindex: ${l}`);
+    for (const p of indexable) {
+      const lastmod = entries.get(`${SITE_ORIGIN}${p.path}`);
+      if (lastmod && (!/^\d{4}-\d{2}-\d{2}$/.test(lastmod) || lastmod !== byType(p, "WebPage")[0]?.dateModified)) {
+        fail("8 Preview server", `${p.path}: sitemap lastmod does not match the WebPage revision date`);
+      }
+    }
     pass("8 Preview server");
     if (WITH_LH) await lighthouse(base);
     return true;

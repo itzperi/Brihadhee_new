@@ -1,5 +1,5 @@
 ---
-import { site, ROUTES, href } from "../data/site.js";
+import { site, ROUTES, href, HERO_IMAGE_SIZES } from "../data/site.js";
 import Icon from "./Icon.astro";
 import Stars from "./Stars.astro";
 import Wordmark from "./Wordmark.astro";
@@ -11,8 +11,12 @@ const { range } = openingTimes(); // "11 AM to 11 PM"
 const avenue = getFact("street").split(",")[0]; // "3rd Avenue"
 // Slideshow: the hero photo first (the LCP image), then the rest (site.js media.heroSlides).
 const slides = [media.hero, ...media.heroSlides];
-const slideSizes = "(max-width: 600px) 82vw, (max-width: 899px) 85vw, (max-width: 1180px) 42vw, 30rem";
+const slideSizes = HERO_IMAGE_SIZES;
 const { h1, coffeeBarId } = Astro.props;
+// One-line offers teaser linking to /offers/ (entity-truth.ts offers; "10% off walk-in · up to 40% off Monday to Thursday, pre-booked").
+const offerLine = getFact("offers")
+  .map((o) => (o.id === "walk-in" ? o.description.replace(" for walk-in dine-in", " walk-in") : o.description.replace(/ when you pre-book a table through .*$/, ", pre-booked")))
+  .join(" · ");
 ---
 
 <section class="hero" id="top">
@@ -62,6 +66,7 @@ const { h1, coffeeBarId } = Astro.props;
           View menu
         </a>
       </div>
+      <p class="hero__offer"><a href={href(ROUTES.offers)}>Offers: {offerLine}</a></p>
     </div>
 
     <div class="hero__media">
@@ -96,6 +101,7 @@ const { h1, coffeeBarId } = Astro.props;
                       width={slide.width}
                       height={slide.height}
                       alt={slide.alt}
+                      loading="eager"
                       fetchpriority="high"
                       decoding="async"
                     />

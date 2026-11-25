@@ -40,7 +40,16 @@ const logoFor = (name) => {
   }
   return null;
 };
-const clients = names.map((name) => ({ name, logo: logoFor(name) })).filter((client) => client.logo);
+// Intrinsic dimensions of the supplied artwork reserve space during loading.
+const DIMENSIONS = {
+  aalam: [200, 200], bi3: [165, 52], freehand: [447, 447], frutta: [112, 112],
+  gokhana: [90, 90], hungerbox: [533, 139], ndr: [198, 147], nestle: [400, 251],
+  pando: [165, 47], prochant: [200, 39], prodapt: [579, 213],
+  selvarangam: [109, 110], stark: [150, 150], "madharsha-group": [508, 460],
+};
+const clients = names.map((name) => ({
+  name, logo: logoFor(name), dimensions: DIMENSIONS[SLUGS[name] ?? slugify(name)],
+})).filter((client) => client.logo);
 /* About 3.2 s per tile keeps the pace readable whatever the list length. */
 const duration = `${Math.max(24, clients.length * 3.2).toFixed(1)}s`;
 ---
@@ -56,7 +65,7 @@ const duration = `${Math.max(24, clients.length * 3.2).toFixed(1)}s`;
         <ul class="clients__list" role="list" aria-label={copy === 0 ? title : undefined} aria-hidden={copy === 1 ? "true" : undefined}>
           {clients.map((c) => (
             <li class={`clients__item${c.name === "Bi3 Technologies" ? " clients__item--dark" : ""}${c.name === "Stark Event Management" ? " clients__item--stark" : ""}`}>
-              <img class={c.name === "Freehand" ? "clients__logo--freehand" : undefined} src={c.logo} alt={copy === 0 ? `${c.name} logo` : `${c.name} logo, repeated for scrolling`} loading="lazy" decoding="async" />
+              <img class={c.name === "Freehand" ? "clients__logo--freehand" : undefined} src={c.logo} width={c.dimensions[0]} height={c.dimensions[1]} alt={copy === 0 ? `${c.name} logo` : `${c.name} logo, repeated for scrolling`} loading="lazy" decoding="async" />
             </li>
           ))}
         </ul>

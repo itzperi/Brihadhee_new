@@ -16,7 +16,8 @@
  *  - hreflang alternates that are not reciprocal
  *  - title longer than 60 characters or meta description longer than 155
  *    (on-page blueprint, 2026-11-11)
- * Warnings: title shorter than 30 characters, description shorter than 70.
+ * Warnings on indexable pages: title shorter than 50 characters, missing
+ * brand suffix, or description shorter than 140 characters.
  */
 import { readFileSync, readdirSync, statSync, existsSync } from "node:fs";
 import { join, resolve, relative } from "node:path";
@@ -26,7 +27,8 @@ const ROOT = resolve(import.meta.dirname, "..");
 const dist = resolve(process.argv[2] ?? join(ROOT, "dist"));
 // GitHub Pages (base "/brihadhee") was turned off on 2026-11-11; every build uses the root.
 const BASE = "";
-const { SITE_ORIGIN } = await import(pathToFileURL(join(ROOT, "src", "data", "entity-truth.ts")).href);
+const { SITE_ORIGIN, getFact } = await import(pathToFileURL(join(ROOT, "src", "data", "entity-truth.ts")).href);
+const brandSuffix = ` | ${getFact("name")}`;
 const SKIP = new Set(["404.html"]); // not indexable by design
 
 const errors = [];
@@ -90,15 +92,16 @@ for (const p of pages) {
   const at = p.path;
   if (!p.title) errors.push(`${at}: missing <title>`);
   else if (len(p.title) > 60) errors.push(`${at}: title is ${len(p.title)} chars (max 60): "${p.title}"`);
-  else if (len(p.title) < 30) warnings.push(`${at}: title is ${len(p.title)} chars (aim 30–60)`);
+  else if (!p.noindex && len(p.title) < 50) warnings.push(`${at}: title is ${len(p.title)} chars (aim 50–60)`);
   if (!p.desc) errors.push(`${at}: missing meta description`);
   else if (len(p.desc) > 155) errors.push(`${at}: description is ${len(p.desc)} chars (max 155): "${p.desc}"`);
-  else if (len(p.desc) < 70) warnings.push(`${at}: description is ${len(p.desc)} chars (aim 70–155)`);
+  else if (!p.noindex && len(p.desc) < 140) warnings.push(`${at}: description is ${len(p.desc)} chars (aim 140–155)`);
   if (!p.lang) errors.push(`${at}: <html> has no lang attribute`);
   if (p.h1 !== 1) errors.push(`${at}: ${p.h1} <h1> elements (need exactly 1)`);
   if (p.keywordsTag) errors.push(`${at}: has a <meta name="keywords"> tag (ignored by Google, reads as stuffing)`);
   if (p.ogUrl && p.canonical && p.ogUrl !== p.canonical) errors.push(`${at}: og:url ${p.ogUrl} does not match canonical ${p.canonical}`);
   if (!p.noindex) {
+    if (!p.title.endsWith(brandSuffix)) warnings.push(`${at}: title does not end with "${brandSuffix}"`);
     if (!p.canonical) errors.push(`${at}: missing canonical`);
     else if (p.canonical !== `${SITE_ORIGIN}${p.path}`)
       errors.push(`${at}: canonical is ${p.canonical}, expected ${SITE_ORIGIN}${p.path}`);
@@ -119,6 +122,7 @@ const sitemap = existsSync(sitemapFile)
   : (errors.push("sitemap.xml missing"), []);
 const inSitemap = new Set(sitemap.map((u) => (u.startsWith(SITE_ORIGIN) ? u.slice(SITE_ORIGIN.length) : u)));
 const byPath = new Map(pages.map((p) => [p.path, p]));
+if (inSitemap.size !== sitemap.length) errors.push("sitemap.xml contains duplicate URLs");
 for (const path of inSitemap) {
   const page = byPath.get(path);
   if (!page) errors.push(`sitemap lists ${path} but no page was built`);

@@ -194,10 +194,23 @@ Recorded in `src/data/entity-truth.ts` with source `B2B` and `verifiedOn: 2026-1
 
 | Item | Value | Where |
 |---|---|---|
-| Companies catered for | Aalam, Freehand, Pando, Bi3 Technologies, Nestlé, NDR, Selvarangam Hospitals, FRUTTA, Go Khana, HungerBox, Pro Chant, Prodapt, Stark Event Management. Names only: no headcounts, dates or contract details | `entity-truth.ts` `corporateClients` |
+| Companies catered for | Aalam, Freehand, Pando, Bi3 Technologies, Nestlé, NDR, Selvarangam Hospitals, FRUTTA, Go Khana, HungerBox, Pro Chant, Prodapt, Stark Event Management, Madharsha Group (added 2026-11-24 at the Brihadhee team's request, with logo). Names only: no headcounts, dates or contract details | `entity-truth.ts` `corporateClients` |
 | Shown on | `/corporate-catering-chennai/`: a "Companies We Have Catered For" logo wall after the daily volume section, plus a "Clients" row in the summary table | `src/components/ClientLogos.astro`, `corporatePage.clients` in `src/data/catering.js` |
 | Logos | One file per company in `public/images/clients/` (`<slug>.svg`, `.png` or `.webp`). A company without a logo file shows its name as a text tile | `ClientLogos.astro` `SLUGS` |
 
 ## L. Catering diet (15 November 2026)
 
 The user confirmed the owner's approval to describe **every catering order as pure vegetarian, including externally sourced items**. This answers Q20 and supersedes the sourcing exception in the 12 November keyword brief. The website applies the approved wording through `IS_CATERING_PURE_VEG` in `config/seo-gates.ts`. The dish and preparation approvals for no onion or garlic, Jain and satvik services are separate.
+
+
+## Owner request of 23 November 2026
+
+The pasted implementation brief in this chat is the source for the following changes.
+
+- Quality and premium positioning is approved.
+- The customized dosa format has thousands of possible ingredient combinations.
+- No-garlic requests are supported, with no-onion options where available. Jain and Marwari guests are a supported audience for ingredient-specific guidance.
+- A public dietary guidance page can explain what to ask before choosing a dish. An exact eligible dish list, base recipes, spice mixes, sides, shared tawa and utensil arrangements remain owner TODOs.
+- Serving hours remain daily 11 AM to 11 PM, for lunch and dinner. Corporate scale remains 1,000+ meals daily across clients. The verified event guest range and service facts stay authoritative.
+
+The implementation uses these approvals in config/seo-gates.ts, entity-truth.ts, Keys.md, dietary guidance and manual profile assets.

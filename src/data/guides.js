@@ -13,13 +13,13 @@
  */
 import { getFact, openingTimes, RESTAURANT_DIET } from "./entity-truth.ts";
 import { ROUTES } from "./site.js";
-import { claimQuestion, list } from "../lib/answers.js";
+import { claimQuestion, list, qa, qaRoute } from "../lib/answers.js";
 import { category, allItems, rupees } from "../lib/menu-facts.js";
 import { cateringEnabled, guests, liveCounters, corporate } from "./catering.js";
 import { CATERING_DIET } from "../../config/seo-gates.ts";
 
 const name = getFact("name");
-const { open: OPEN, range: HOURS } = openingTimes();
+const { open: OPEN, close: CLOSE } = openingTimes();
 const item = (n) => {
   const hit = allItems.find((i) => i.name === n);
   if (!hit) throw new Error(`[guides] menu item "${n}" not found in menu-canonical.ts`);
@@ -45,10 +45,10 @@ const q = (text) => claimQuestion(PATH, text);
 export const nellaiGuide = {
   path: PATH,
   published: "2026-11-12",
-  title: "What Are Nellai Meals? Sodhi, Ulundhu Kali, Tirunelveli Food",
+  title: `Nellai Meals Guide to Sodhi and Ulundhu Kali | ${name}`,
   description: `What are Nellai meals? A guide to sodhi, ulundhu kali, idiyappam and Tirunelveli food, and where to eat a Nellai meal in Chennai at ${name}.`,
   h1: "What Are Nellai Meals? A Guide to Sodhi, Ulundhu Kali and Tirunelveli Food",
-  intro: `Nellai is another name for Tirunelveli in southern Tamil Nadu. At ${name} in Anna Nagar East, Chennai, Nellai meals are a vegetarian banana-leaf lunch with sodhi, a coconut milk stew, and ulundhu kali, a sweet made with palm jaggery.`,
+  intro: `Nellai is another name for Tirunelveli in southern Tamil Nadu. At ${name} in Anna Nagar East, Chennai, Nellai meals are a vegetarian banana-leaf lunch with sodhi, a coconut milk stew, and ulundhu kali, a sweet made with palm jaggery. ${name} serves them for lunch every day.`,
   sections: [
     {
       id: "what-are-nellai-meals",
@@ -81,10 +81,10 @@ export const nellaiGuide = {
     {
       id: "tirunelveli-cuisine",
       title: q("What Is Tirunelveli Cuisine Known For?"),
-      answer: `Tirunelveli cuisine is known for coconut-rich vegetarian dishes such as sodhi, palm jaggery sweets such as ulundhu kali, and the famous Tirunelveli halwa. In Chennai, ${name} serves the first two at its ${RESTAURANT_DIET} restaurant in Anna Nagar East.`,
+      answer: `Tirunelveli cuisine is known for coconut-rich dishes such as sodhi, palm jaggery sweets such as ulundhu kali, and the famous Tirunelveli halwa. At ${name} in Anna Nagar East, Chennai, sodhi and ulundhu kali are both part of the restaurant’s vegetarian banana-leaf lunch.`,
       paras: [
         "The district sits between the Western Ghats and the sea, and its cooking reflects both: coconut in stews and kootu, palm jaggery from the palmyra trees of the dry plains, and a preference for gentle, layered flavours over heavy spice.",
-        `Tirunelveli halwa, a glossy wheat halwa, is the sweet the town is famous for, but it is not on ${name}'s menu. The restaurant's Nellai dishes are the sodhi meal, ulundhu kali and sodhi with idiyappam or idly, served next to dishes from Karaikudi, further north in Chettinad, such as ${poppers.name} (${rupees(poppers.price)}).`,
+        `Tirunelveli halwa, a glossy wheat halwa, is the sweet the town is famous for, but it is not on ${name}'s menu. The restaurant's Nellai dishes are the sodhi meal, ulundhu kali and sodhi with idiyappam or idly, served next to dishes from Karaikudi, further north in Chettinad, such as ${poppers.name} (${rupees(poppers.price)}). See [how Karaikudi and Nellai food compare](${ROUTES.karaikudiNellaiGuide}).`,
       ],
     },
     {
@@ -99,7 +99,7 @@ export const nellaiGuide = {
     {
       id: "where-to-eat",
       title: "Where to Eat Nellai Meals in Chennai",
-      answer: `${name} serves Nellai meals on ${getFact("street")}, near ${getFact("landmarks")[0]}. It is open every day from ${HOURS}, and lunch starts at ${OPEN}.`,
+      answer: `${name} serves Nellai meals on ${getFact("street")}, near ${getFact("landmarks")[0]}. Lunch starts at ${OPEN} every day, and the restaurant is open until ${CLOSE}. The ${sodhiMeals.name} costs ${rupees(sodhiMeals.price)} before GST and is served on a banana leaf.`,
       paras: [
         `The restaurant is ${RESTAURANT_DIET}: no meat, egg or fish is cooked in its kitchen, and alcohol is not served. Ask the restaurant about specific ingredients if you follow dietary rules for a festival or a vow.`,
         `The full banana-leaf meal is a lunch dish. At dinner, you can try the same style of stew with ${idiyappamSodhi.name} or ${sodhiIdly.name}.`,
@@ -111,7 +111,7 @@ export const nellaiGuide = {
           {
             id: "nellai-catering",
             title: "Nellai Food at Your Function",
-            answer: `${name}'s event catering brings Nellai cooking to functions across Chennai for ${num(guests.min)} to ${num(guests.max)} guests, with live counters for ${list(liveCounters)}.`,
+            answer: `${name} offers ${CATERING_DIET} catering for functions across Chennai for ${num(guests.min)} to ${num(guests.max)} guests. Discuss Nellai dishes for your menu and ask about live counters for ${list(liveCounters)}. Share your venue, date and guest count so the team can include the menu and service arrangements in your quote.`,
             paras: [
               `For a wedding, birthday or family function, see [${CATERING_DIET} event catering in Chennai](${ROUTES.eventCatering}). Ask what the quote covers for preparation, serving and setup.` +
                 (corporate
@@ -121,5 +121,64 @@ export const nellaiGuide = {
           },
         ]
       : []),
+  ],
+  faq: qaRoute(PATH, [
+    qa("What is the difference between sodhi and salna at Brihadhee?",
+      "Sodhi is a coconut milk stew from Tirunelveli, while salna is the gravy Brihadhee serves with parotta. Order sodhi with the Nellai meal, idiyappam or idly at Brihadhee in Anna Nagar East."),
+    qa("Can you order ulundhu kali on its own at Brihadhee?",
+      `Yes. ${name} lists ${kali.name} on its own for ${rupees(kali.price)} before GST. It is a black urad dal sweet made with palm jaggery and also comes as part of the ${sodhiMeals.name}.`),
+  ]),
+};
+
+/* ---- /guides/karaikudi-vs-nellai-veg-cuisine/: comparison explainer ------------------
+ * Every Brihadhee dish, description and price comes from menu-canonical.ts; the only
+ * general facts are the two places (Tirunelveli; Karaikudi in the Chettinad region).
+ * Schema: Article + BreadcrumbList only (no FAQPage), so the page has no Q&A block. */
+const chettinadPaneer = item("Chettinadu Paneer Gravy");
+const chukka = item("Kaalan Chukka Gravy");
+export const karaikudiNellaiGuide = {
+  path: ROUTES.karaikudiNellaiGuide,
+  published: "2026-11-24",
+  title: `Karaikudi vs Nellai Veg Food: Sodhi to Poppers | ${name}`,
+  description: `Karaikudi vs Nellai vegetarian food at ${name}, Anna Nagar East: coconut-milk sodhi and ulundhu kali (${rupees(kali.price)}) against spice-roasted Paneer Poppers (${rupees(poppers.price)}).`,
+  h1: "Karaikudi vs Nellai: Two Tamil Vegetarian Kitchens Compared",
+  intro: `At ${name} in Anna Nagar East, Nellai (Tirunelveli) dishes are built on coconut milk: sodhi, a coconut milk stew, and ${kali.name} (${rupees(kali.price)}), a palm-jaggery sweet. Karaikudi dishes lean on roasted spice blends, as in ${poppers.name} (${rupees(poppers.price)}), seasoned with heritage gunpowder and house-made 65 spices.`,
+  table: {
+    caption: `Nellai and Karaikudi dishes at ${name}, with prices before 5% GST`,
+    head: ["Compared", "Nellai (Tirunelveli)", "Karaikudi (Chettinad)"],
+    rows: [
+      ["Where it comes from", "Tirunelveli, in southern Tamil Nadu", "Karaikudi, the main town of the Chettinad region"],
+      ["Flavour base on the menu", "Coconut milk (sodhi) and palm jaggery (kali)", "Roasted spice blends: gunpowder, 65 spices, chukka masala"],
+      ["Signature dish", `[${sodhiMeals.name}](${ROUTES.lunch}), ${rupees(sodhiMeals.price)}`, `${poppers.name}, ${rupees(poppers.price)}`],
+      ["Other dishes", `${idiyappamSodhi.name} and ${sodhiIdly.name}, ${rupees(idiyappamSodhi.price)} each`, `${chettinadPaneer.name} and ${chukka.name}, ${rupees(chettinadPaneer.price)} each`],
+      ["Sweet", `${kali.name}, ${rupees(kali.price)}`, "None on the menu"],
+      ["When to order", `${sodhiMeals.name} at lunch from ${OPEN}; ${idiyappamSodhi.name} until ${CLOSE}`, `Lunch or dinner, until ${CLOSE}`],
+    ],
+  },
+  sections: [
+    {
+      id: "nellai",
+      title: "What Makes Nellai Food Different?",
+      answer: `Nellai food at ${name} is defined by sodhi, a coconut milk stew, poured over rice in the ${sodhiMeals.name} (${rupees(sodhiMeals.price)}) or over idiyappam and idly. The meal ends with ${lc(kali.description)}`,
+      paras: [
+        `The ${sodhiMeals.name} lists ${lc(sodhiMeals.description)} Read the full [guide to Nellai meals](${ROUTES.nellaiGuide}) for each part of the meal.`,
+      ],
+    },
+    {
+      id: "karaikudi",
+      title: "What Makes Karaikudi Food Different?",
+      answer: `Karaikudi cooking at ${name} is about roasted, ground spice blends rather than coconut milk. ${poppers.name} (${rupees(poppers.price)}) are ${lc(poppers.description)}`,
+      paras: [
+        `Two Chettinad gravies use the same approach: ${chettinadPaneer.name} (${lc(chettinadPaneer.description)}) and ${chukka.name} (${lc(chukka.description)}), each ${rupees(chettinadPaneer.price)}. See them with every other dish on the [menu](${ROUTES.menu}).`,
+      ],
+    },
+    {
+      id: "both",
+      title: "Can You Have Both at One Meal or Event?",
+      answer: `Yes. ${name} serves Nellai and Karaikudi dishes on one menu, so a lunch can pair the ${sodhiMeals.name} with ${poppers.name}.`,
+      paras: cateringEnabled
+        ? [`For functions, Nellai Sodhi and Karaikudi Paneer Poppers are both offered as live counters through [${name}'s event catering](${ROUTES.eventCatering}).`]
+        : [],
+    },
   ],
 };

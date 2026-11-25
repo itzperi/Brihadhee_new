@@ -8,6 +8,7 @@ export default defineConfig({
   site: SITE_ORIGIN,
   base: "/",
   output: "static",
+  trailingSlash: "always",
   build: {
     inlineStylesheets: "always",
   },

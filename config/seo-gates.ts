@@ -21,10 +21,10 @@
 /**
  * FAQPage JSON-LD. Google stopped showing FAQ rich results on 7 May 2026 and removed
  * the FAQPage documentation on 15 June 2026 (Search Central changelog, checked
- * 16 Nov 2026). The visible Q&A stays on every page; only the markup is off.
- * Set to true to emit FAQPage again: every check still validates it when present.
+ * 16 Nov 2026). Turned back on 21 Nov 2026 (SEO lead approval) for machine readability
+ * only: no rich result is expected. Every check validates that it equals the visible Q&A.
  */
-export const EMIT_FAQPAGE = false;
+export const EMIT_FAQPAGE = true;
 
 /* ---- Dietary and positioning -------------------------------------------- */
 
@@ -32,22 +32,21 @@ export const EMIT_FAQPAGE = false;
  * including items sourced elsewhere, on 15 November 2026. */
 export const IS_CATERING_PURE_VEG = true;
 
-/** Q11 to Q14: the no-onion-no-garlic page, its FAQ and nav link (keyword plan 3.15a, 3.15c, 3.15d, 3.16, 4.8). */
+/**
+ * The owner request of 23 November 2026 approved a public dietary guidance page, but the
+ * client keyword rules of 24 November 2026 hold every no-onion, no-garlic, Jain and satvik
+ * mention off live routes until the kitchen confirms Q11-Q14 (dish list, sambar/chutney/podi
+ * ingredients, shared tawa, fermented batter). Off: no page, nav link, sitemap or llms entry,
+ * and the page renders only as a noindex draft in `astro dev` / SEO_GATES_PREVIEW=1. The
+ * tiered draft for after confirmation is drafts/no-onion-no-garlic-anna-nagar.md.
+ */
 export const ENABLE_NO_ONION_NO_GARLIC_CLUSTER = false;
-/**
- * Q12: dishes the kitchen confirms it can make without onion and garlic, dish by dish
- * (including podi, sambar powder, tadka, shared tawa and ghee). Must be non-empty
- * before ENABLE_NO_ONION_NO_GARLIC_CLUSTER is turned on.
- */
+// TODO(owner) Supply confirmed recipes and preparation details before naming eligible dishes.
 export const NO_ONION_NO_GARLIC_DISHES: readonly string[] = [];
-/** Q12: "on request" or "always available". Leave null until confirmed. */
-export const NO_ONION_NO_GARLIC_AVAILABILITY: "on request" | "always available" | null = null;
-
-/**
- * Q13 and Q14: Jain-friendly wording (keyword plan 3.15b). Never "pure Jain",
- * "100% Jain", "strictly Jain" or "Jain certified" (section 7), even when on.
- * Needs ENABLE_NO_ONION_NO_GARLIC_CLUSTER.
- */
+export const NO_ONION_NO_GARLIC_AVAILABILITY: "on request" | "always available" | null = "on request";
+/** Audience guidance only, with ingredient and preparation confirmation for each order.
+ *  Off with the cluster until the kitchen confirms Q13-Q14 (client rules, 24 Nov 2026).
+ *  Even when on, the site never says "pure Jain", "100% Jain" or "strictly Jain". */
 export const ENABLE_JAIN_FRIENDLY_CLAIMS = false;
 
 /** Q17: Hindi (Hinglish and Devanagari) copy on the website. Tamil is already approved. */
@@ -67,7 +66,7 @@ export const ENABLE_BRAHMIN_RELIGIOUS_FUNCTIONS = false;
 export const ENABLE_SUB_BRAND = false;
 
 /** Q22: may the site call Brihadhee "premium"? */
-export const ENABLE_PREMIUM_WORDING = false;
+export const ENABLE_PREMIUM_WORDING = true; // Owner request, 23 November 2026. Specific recipes still require kitchen confirmation.
 
 /* ---- Catering enquiry ---------------------------------------------------- */
 
@@ -99,20 +98,11 @@ export const MEAL_FRAMING = "Lunch & Dinner Only";
 export const ENABLE_NAMED_TEMPLE = false;
 export const NEARBY_TEMPLE: { name: string; where: string } | null = null;
 
-/* ---- The one permitted mention of a retired service ----------------------- */
+/* ---- Dining schedule FAQ ------------------------------------------------ */
 
-/**
- * Keyword plan 4.2 and 4.7: one FAQ answers "Does Brihadhee serve breakfast?" with
- * "No ... lunch and dinner only", to correct listings that still show a morning
- * opening. This exact question is the ONLY place the word may appear; the answer
- * itself never repeats it. The checks (check-facts, aeo-lint, verify-seo-compliance)
- * remove exactly this string before scanning, nothing else.
- */
-export const NEGATIVE_FAQ_QUESTION = "Does Brihadhee serve breakfast?";
-/** Anchor id for that FAQ item (the default id would put the word into a URL fragment). */
+/** Legacy export names are retained for the existing validators and page callers. */
+export const NEGATIVE_FAQ_QUESTION = "Which meals does Brihadhee serve?";
 export const NEGATIVE_FAQ_ID = "meal-times";
-
-/** Remove the permitted negative FAQ question from text before a retired-term scan. */
 export function stripPermittedNegatives(text: string): string {
   return text.split(NEGATIVE_FAQ_QUESTION).join(" ");
 }
